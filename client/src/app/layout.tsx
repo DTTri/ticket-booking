@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { fontSans } from "@/libs/fonts";
 
 export const metadata: Metadata = {
   title: "Ticket Selling",
@@ -13,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body className={`${fontSans}`}>{children}</body>
     </html>
   );
 }
