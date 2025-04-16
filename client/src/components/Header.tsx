@@ -6,7 +6,7 @@ import { Button } from '@/ui/button'
 
 export default function Header() {
   return (
-    <div className='w-full min-h-[70px] h-full flex flex-row justify-between items-center px-8 border-b-1 border-b-gray-200'>
+    <div className='w-full h-[70px] flex flex-row justify-between items-center px-8 border-b-1 border-b-gray-200'>
         <div className="logo-img w-[11%]">
             <Link href={"/"}>
                 <Image src={logo_app} alt="Logo" className='w-full h-full block cursor-pointer'/>

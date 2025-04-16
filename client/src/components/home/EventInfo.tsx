@@ -13,7 +13,7 @@ export default function EventInfo({ event }: MatchProps) {
   const day = startDate.getDate();
 
   return (
-    <div className="min-w-[324px] h-[210px] rounded-[20px] overflow-hidden bg-background flex flex-col">
+    <div className="min-w-[324px] h-[210px] rounded-[20px] overflow-hidden bg-[#f6f3f3] flex flex-col">
       <div className="img w-full h-[55%] round-lr-[20px] overflow-hidden">
         <img
           src={event.Image}
@@ -21,7 +21,7 @@ export default function EventInfo({ event }: MatchProps) {
           className="w-full h-full object-cover object-center"
         />
       </div>
-      <div className="w-full h-[45%] bg-gray-200 flex flex-row items-start justify-start gap-1 px-3 py-1">
+      <div className="w-full h-[45%] flex flex-row items-start justify-start gap-1 px-3 py-1">
         <div className="flex flex-col w-[15%]">
           <div className="month text-[#3D37F1] font-semibold text-[13px]">
             {month}
