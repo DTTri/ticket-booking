@@ -65,7 +65,30 @@ const TimeIcon = () => {
   );
 };
 
-export default function OrderCard() {
+type OrderStatus = "Incoming" | "Cancelled" | "Passed";
+
+interface OrderCardProps {
+  id?: number;
+  eventName?: string;
+  section?: string;
+  row?: string;
+  seats?: string;
+  location?: string;
+  date?: string;
+  price?: number;
+  status?: OrderStatus;
+}
+
+export default function OrderCard({
+  eventName = "FC Barcelona vs Real Madrid",
+  section = "214",
+  row = "C",
+  seats = "4,5,6",
+  location = "America First Field, Sandy, Utah, USA",
+  date = "Mar 22 • Sat • 7:30PM • 2025",
+  price = 20,
+  status = "Incoming",
+}: OrderCardProps = {}) {
   return (
     <div className="w-full min-w-[400px] h-[104px] flex items-center justify-between rounded-lg border border-darkStroke">
       <Image
@@ -78,27 +101,31 @@ export default function OrderCard() {
       <div className="px-2 py-1 flex justify-between w-full h-full">
         <div className="h-full flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-darkText text-lg">FC Barcelona vs Real Madrid</h3>
+            <h3 className="font-bold text-darkText text-lg">{eventName}</h3>
             <p className="font-medium text-darkText text-base -mt-1">
-              Section 214 • Row C • Seats 4,5,6
+              Section {section} • Row {row} • Seats {seats}
             </p>
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex gap-1 items-center">
               <AddressIcon />
-              <p className="text-xs text-grayText">America First Field, Sandy, Utah, USA</p>
+              <p className="text-xs text-grayText">{location}</p>
             </div>
             <div className="flex gap-1 items-center">
               <TimeIcon />
-              <p className="text-xs text-grayText">Mar 22 • Sat • 7:30PM • 2025</p>
+              <p className="text-xs text-grayText">{date}</p>
             </div>
           </div>
         </div>
         <div>
           <div className="flex flex-col h-[45px] justify-between items-end">
             {/* price */}
-            <p className="font-semibold text-base text-darkText text-end">$20</p>{" "}
-            <p className="font-semibold text-base text-primary text-end">Paid</p>
+            <p className="font-semibold text-base text-darkText text-end">${price}</p>
+            <p
+              className={`font-semibold text-sm px-2 py-0.5 text-center ${status === "Incoming" ? "text-green-500" : status === "Cancelled" ? "text-red-500" : "text-gray-500"}`}
+            >
+              {status}
+            </p>
           </div>
         </div>
       </div>
