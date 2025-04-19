@@ -18,10 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <div className="w-full min-h-screen">
+      <body className="w-full min-h-screen">
         <Header />
-        <body className={`${fontSans}`}>{children}</body>
-      </div>
+        <main className={`${fontSans}`}>{children}</main>
+      </body>
     </html>
   );
 }

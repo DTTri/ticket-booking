@@ -26,7 +26,7 @@ export default function Home() {
     }
   };
   return (
-    <main className="w-full min-h-screen h-full pb-5">
+    <div className="w-full min-h-screen h-full pb-5">
       <div
         className="w-full h-[550px] flex flex-row justify-center gap-6 relative px-10 py-10 mb-[80px]"
         style={{
@@ -121,6 +121,6 @@ export default function Home() {
           </button>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
