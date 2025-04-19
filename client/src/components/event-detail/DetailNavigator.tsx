@@ -1,6 +1,5 @@
 'use client'
 import Image from 'next/image'
-import eventImage from '../../../public/event-image.png'
 import InfoNavigator from './InfoNavigator'
 import { useCallback, useState } from 'react';
 import About from './About';
