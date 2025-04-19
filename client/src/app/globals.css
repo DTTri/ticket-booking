@@ -7,6 +7,7 @@
   --color-darkText: #1d1d1d;
   --color-whiteText: #ffffff;
   --color-grayText: #686868;
+  --color-darkStroke: #686868cc;
 }
 
 /* @media (prefers-color-scheme: dark) {
