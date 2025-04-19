@@ -36,8 +36,6 @@ export default function DetailNavigator() {
           {infoSelect === "details" && <Detail event={sampleEvents[0]} />}
           {infoSelect === "tickets" && <Ticket />}
         </div>
-        <TextField variant={"standard"} label="123" placeholder="12312"/>
-
         <div className="w-full h-[5%] flex flex-row-reverse">
           <Button
             variant={"default"}

@@ -1,4 +1,5 @@
 import Event from "@/models/Event";
+import Seat from "@/models/Seat";
 
 export const sampleEvents: Event[] = [
   {
@@ -70,5 +71,44 @@ export const sampleEvents: Event[] = [
     OrganizerUserId: "user987",
     CreatedAt: "2025-01-10T07:00:00Z",
     UpdatedAt: "2025-02-20T09:00:00Z",
+  },
+];
+
+
+export const sampleSeats: Seat[] = [
+  {
+    SeatId: "S1",
+    SectionId: "A1",
+    SeatNumber: "1",
+    RowNumber: "1",
+    SeatInRow: 10,
+  },
+  {
+    SeatId: "S2",
+    SectionId: "A1",
+    SeatNumber: "2",
+    RowNumber: "1",
+    SeatInRow: 10,
+  },
+  {
+    SeatId: "S3",
+    SectionId: "A1",
+    SeatNumber: "3",
+    RowNumber: "1",
+    SeatInRow: 10,
+  },
+  {
+    SeatId: "S4",
+    SectionId: "A2",
+    SeatNumber: "1",
+    RowNumber: "2",
+    SeatInRow: 8,
+  },
+  {
+    SeatId: "S5",
+    SectionId: "A2",
+    SeatNumber: "2",
+    RowNumber: "2",
+    SeatInRow: 8,
   },
 ];
