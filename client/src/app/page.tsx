@@ -2,7 +2,7 @@
 import Image from "next/image";
 import home_background from "../../public/Home_Background.png";
 import pngguru from "../../public/pngguru.svg";
-import { Button } from "@/ui/button";
+import { Button } from "@/components/ui/button";
 import EventInfo from "@/components/home/EventInfo";
 import { sampleEvents } from "@/libs/place-holder.data";
 import { useState } from "react";

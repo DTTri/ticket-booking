@@ -4,7 +4,7 @@ import InfoNavigator from "./InfoNavigator";
 import { useCallback, useState } from "react";
 import About from "./About";
 import { sampleEvents } from "@/libs/place-holder.data";
-import { Button } from "@/ui/button";
+import { Button } from "../ui/button";
 import Detail from "./Detail";
 import Ticket from "./Ticket";
 

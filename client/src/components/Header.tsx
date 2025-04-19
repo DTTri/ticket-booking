@@ -2,7 +2,7 @@ import React from "react";
 import logo_app from "../../public/logo_app.png";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/ui/button";
+import { Button } from "./ui/button";
 
 export default function Header() {
   return (
