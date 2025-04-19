@@ -44,13 +44,10 @@ export default function Home() {
           />
         </div>
         <div className="w-[50%] h-full flex flex-col justify-center items-start gap-3 px-5 py-5">
-          <h2 className="text-white text-[40px] font-semibold ">
-            Welcome to Ticket Booking
-          </h2>
+          <h2 className="text-white text-[40px] font-semibold ">Welcome to Ticket Booking</h2>
           <p className="text-white text-[16px] font-normal">
-            Buy your tickets online and enjoy the convenience of digital
-            ticketing. No more waiting in line or worrying about losing your
-            ticket.
+            Buy your tickets online and enjoy the convenience of digital ticketing. No more waiting
+            in line or worrying about losing your ticket.
           </p>
           <Button
             variant={"default"}
@@ -90,9 +87,7 @@ export default function Home() {
         </div>
       </div>
       <div className="w-[75%] mx-auto searched-match py-5 px-6">
-        <div className="text-[#242565] font-bold text-3xl mb-3">
-          Recently Viewed
-        </div>
+        <div className="text-[#242565] font-bold text-3xl mb-3">Recently Viewed</div>
         <div className="relative flex items-center">
           <button
             onClick={handlePrevious}
@@ -109,11 +104,8 @@ export default function Home() {
                 transform: `translateX(-${startIndex * (100 / itemsPerPage)}%)`,
               }}
             >
-              {sampleEvents.map((event) => (
-                <div
-                  key={event.Guid}
-                  className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4"
-                >
+              {sampleEvents.map(event => (
+                <div key={event.Guid} className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4">
                   <EventInfo event={event} />
                 </div>
               ))}
