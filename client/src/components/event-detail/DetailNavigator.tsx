@@ -7,6 +7,7 @@ import { sampleEvents } from "@/libs/place-holder.data";
 import { Button } from "../ui/button";
 import Detail from "./Detail";
 import Ticket from "./Ticket";
+import { TextField } from "../ui/text-input";
 
 export default function DetailNavigator() {
   const [infoSelect, setInfoSelect] = useState<"details" | "about" | "tickets">("about");
@@ -35,10 +36,12 @@ export default function DetailNavigator() {
           {infoSelect === "details" && <Detail event={sampleEvents[0]} />}
           {infoSelect === "tickets" && <Ticket />}
         </div>
+        <TextField variant={"standard"} label="123" placeholder="12312"/>
+
         <div className="w-full h-[5%] flex flex-row-reverse">
           <Button
             variant={"default"}
-            className="font-semibold px-6 py-4 text-[16px] bg-primary hover:bg-primary/70"
+            className="font-semibold px-6 py-4 text-[16px]"
           >
             Book
           </Button>
