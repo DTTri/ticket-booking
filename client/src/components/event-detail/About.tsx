@@ -55,15 +55,13 @@ export default function About({ event }: Props) {
 
       {/* Description */}
       <p className="text-gray-700 text-sm leading-6">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada
-        ipsum sit amet nulla feugiat, vitae accumsan neque tincidunt. Morbi sit
-        amet dapibus nisi. Nulla scelerisque, dolor eget cursus lobortis, dui
-        massa ultricies dui, non blandit nibh ipsum ac diam. Aenean non
-        ultricies urna, at sagittis ipsum. Morbi mattis sit amet ex ut bibendum.
-        Sed viverra tortor metus, ac mattis ante efficitur eu. Sed semper
-        faucibus justo, vel congue tortor sodales eget. Phasellus elementum est
-        et pharetra elementum. Aliquam euismod, eros sit amet vulputate
-        eleifend, turpis nibh semper velit, vel suscipit ligula metus id nisl.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada ipsum sit amet
+        nulla feugiat, vitae accumsan neque tincidunt. Morbi sit amet dapibus nisi. Nulla
+        scelerisque, dolor eget cursus lobortis, dui massa ultricies dui, non blandit nibh ipsum ac
+        diam. Aenean non ultricies urna, at sagittis ipsum. Morbi mattis sit amet ex ut bibendum.
+        Sed viverra tortor metus, ac mattis ante efficitur eu. Sed semper faucibus justo, vel congue
+        tortor sodales eget. Phasellus elementum est et pharetra elementum. Aliquam euismod, eros
+        sit amet vulputate eleifend, turpis nibh semper velit, vel suscipit ligula metus id nisl.
         Duis rhoncus orci eget nisl accumsan, sed eleifend est egestas.
       </p>
     </div>
