@@ -12,11 +12,8 @@ export default function DetailNavigator() {
   const [infoSelect, setInfoSelect] = useState<"details" | "about" | "tickets">("about");
 
   const handleClick = useCallback((type: "details" | "about" | "tickets") => {
-    console.log("type", type);
     setInfoSelect(type);
   }, []);
-
-  console.log("InfoSelect", infoSelect);
 
   return (
     <div className='w-full h-full flex flex-row'>

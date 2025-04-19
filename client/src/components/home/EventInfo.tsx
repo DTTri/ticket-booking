@@ -1,4 +1,5 @@
 import Event from "@/models/Event";
+import Image from "next/image";
 
 interface MatchProps {
   event: Event;
@@ -15,9 +16,11 @@ export default function EventInfo({ event }: MatchProps) {
   return (
     <div className="min-w-[324px] h-[210px] rounded-[20px] overflow-hidden bg-[#f6f3f3] flex flex-col">
       <div className="img w-full h-[55%] round-lr-[20px] overflow-hidden">
-        <img
+        <Image
           src={event.Image}
           alt="Event"
+          width={350}
+          height={300}
           className="w-full h-full object-cover object-center"
         />
       </div>

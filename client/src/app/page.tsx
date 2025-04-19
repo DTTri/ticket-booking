@@ -9,9 +9,9 @@ import { useState } from "react";
 
 export default function Home() {
   const [startIndex, setStartIndex] = useState(0);
-  const [location, setLocation] = useState("");
-  const [match, setMatch] = useState("");
-  const [date, setDate] = useState("");
+  // const [location, setLocation] = useState("");
+  // const [match, setMatch] = useState("");
+  // const [date, setDate] = useState("");
   const itemsPerPage = 3;
 
   const handleNext = () => {
@@ -109,7 +109,7 @@ export default function Home() {
                 transform: `translateX(-${startIndex * (100 / itemsPerPage)}%)`,
               }}
             >
-              {sampleEvents.map((event, index) => (
+              {sampleEvents.map((event) => (
                 <div
                   key={event.Guid}
                   className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4"
