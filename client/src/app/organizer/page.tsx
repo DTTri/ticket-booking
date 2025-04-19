@@ -80,7 +80,7 @@ export default function OrganizerPage() {
               incididunt ut labore et dolore magna aliqua.
             </p>
           </div>
-          <Link href="/organizer/event">
+          <Link href="/organizer/event/new">
             <Button className="bg-secondary hover:bg-secondary/80 text-whiteText px-5 font-bold py-2 rounded-md">
               Create event
             </Button>
@@ -154,7 +154,7 @@ export default function OrganizerPage() {
                       </span>
                     </td>
                     <td className="w-[7%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      <Link href={`/organizer/events/${event.id}`}>
+                      <Link href={`/organizer/event/${event.id}`}>
                         <button className="text-secondary hover:text-secondary/70">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
