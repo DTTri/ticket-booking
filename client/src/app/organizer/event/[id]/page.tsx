@@ -3,9 +3,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dropdown } from "@/components/ui/dropdown";
-import { Upload, Plus, Trash2, MapPin, AlertCircle } from "lucide-react";
+import { Upload, Plus, Trash2, MapPin, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const categories = [
   { value: "match", label: "Match" },
@@ -22,6 +23,10 @@ const statusOptions = {
   Rescheduled: ["Cancelled", "Postponed"],
 };
 
+const isUserAdmin = () => {
+  return true;
+};
+
 const fetchEventData = async (id: string) => {
   return {
     id,
@@ -36,7 +41,7 @@ const fetchEventData = async (id: string) => {
     posterImage: null,
     galleryImages: [],
     details: "Additional details about the match...",
-    status: "Published",
+    status: "Submit for Approval",
     prices: [
       { section: 1, price: 49.0 },
       { section: 2, price: 59.0 },
@@ -68,6 +73,9 @@ export default function EventPage() {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [details, setDetails] = useState("");
   const [status, setStatus] = useState("Draft");
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [showRejectionDialog, setShowRejectionDialog] = useState(false);
+  const [isAdmin] = useState(isUserAdmin());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -155,7 +163,40 @@ export default function EventPage() {
   const isPricingDisabled = status !== "Draft";
 
   const handleStatusChange = (newStatus: string) => {
-    setStatus(newStatus);
+    if (newStatus === "Rejected" && isAdmin) {
+      // Show rejection reason dialog for admins
+      setShowRejectionDialog(true);
+    } else {
+      setStatus(newStatus);
+    }
+  };
+
+  const handleReject = () => {
+    if (rejectionReason.trim() === "") {
+      alert("Please provide a reason for rejection");
+      return;
+    }
+
+    setStatus("Rejected");
+    setShowRejectionDialog(false);
+    // In a real app, you would save the rejection reason to the database
+  };
+
+  const handleApprove = async () => {
+    setIsLoading(true);
+
+    try {
+      // In a real app, this would be an API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setStatus("Published");
+      alert("Event has been approved and published!");
+    } catch (err) {
+      setError("Failed to approve event. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const [originalEventData, setOriginalEventData] = useState<{
@@ -271,10 +312,30 @@ export default function EventPage() {
                 {status === "Postponed" && "Your event has been postponed. You can reschedule it."}
                 {status === "Cancelled" && "Your event has been cancelled."}
                 {status === "Rescheduled" && "Your event has been rescheduled."}
+                {status === "Rejected" && "Your event has been rejected by an admin."}
               </p>
             </div>
 
             <div className="flex gap-2">
+              {/* Show admin-specific buttons if user is admin */}
+              {isAdmin && status === "Submit for Approval" && (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleApprove}
+                    className="bg-green-500 hover:bg-green-600 text-white flex items-center"
+                  >
+                    <CheckCircle className="mr-1" size={16} /> Approve
+                  </Button>
+                  <Button
+                    onClick={() => handleStatusChange("Rejected")}
+                    className="bg-red-500 hover:bg-red-600 text-white flex items-center"
+                  >
+                    <XCircle className="mr-1" size={16} /> Reject
+                  </Button>
+                </div>
+              )}
+
+              {/* Show regular status change buttons */}
               {statusOptions[status as keyof typeof statusOptions]?.map(option => (
                 <Button
                   key={option}
@@ -284,6 +345,50 @@ export default function EventPage() {
                   {option}
                 </Button>
               ))}
+            </div>
+          </div>
+
+          {/* Admin-only section */}
+          {isAdmin && (
+            <div className="mt-4 pt-4 border-t border-gray-300">
+              <div className="flex justify-between items-center">
+                <h3 className="font-medium">Admin Actions</h3>
+                <Link href="/admin/payments" className="text-blue-500 hover:text-blue-700">
+                  View Payment Transactions
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Rejection Dialog */}
+      {showRejectionDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">Reject Event</h3>
+            <p className="mb-4">Please provide a reason for rejecting this event:</p>
+            <textarea
+              value={rejectionReason}
+              onChange={e => setRejectionReason(e.target.value)}
+              className="w-full h-32 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary mb-4"
+              placeholder="Rejection reason..."
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                onClick={() => setShowRejectionDialog(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleReject}
+                className="bg-red-500 hover:bg-red-600 text-white"
+              >
+                Reject Event
+              </Button>
             </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ const customStyles = `
   }
 `;
 
-type EventStatus = "Draft" | "Published" | "Pending" | "Postponed" | "Scheduled";
+type EventStatus = "Draft" | "Published" | "Submit for Approval" | "Postponed" | "Scheduled";
 
 interface Event {
   id: number;
@@ -28,7 +28,13 @@ interface Event {
 
 // Use a deterministic pattern for status to avoid hydration mismatch
 const getStatusForIndex = (index: number): EventStatus => {
-  const statuses: EventStatus[] = ["Draft", "Published", "Pending", "Postponed", "Scheduled"];
+  const statuses: EventStatus[] = [
+    "Draft",
+    "Published",
+    "Submit for Approval",
+    "Postponed",
+    "Scheduled",
+  ];
   return statuses[index % statuses.length];
 };
 
@@ -52,7 +58,7 @@ export default function OrganizerPage() {
         return "text-gray-700";
       case "Published":
         return "text-blue-700";
-      case "Pending":
+      case "Submit for Approval":
         return "text-yellow-700";
       case "Postponed":
         return "text-red-700";
