@@ -26,6 +26,12 @@ interface Event {
   status: EventStatus;
 }
 
+// Use a deterministic pattern for status to avoid hydration mismatch
+const getStatusForIndex = (index: number): EventStatus => {
+  const statuses: EventStatus[] = ["Draft", "Published", "Pending", "Postponed", "Scheduled"];
+  return statuses[index % statuses.length];
+};
+
 const sampleEvents: Event[] = Array(10)
   .fill(null)
   .map((_, index) => ({
@@ -35,9 +41,7 @@ const sampleEvents: Event[] = Array(10)
     sold: 60,
     available: 240,
     revenue: 8900,
-    status: ["Draft", "Published", "Pending", "Postponed", "Scheduled"][
-      Math.floor(Math.random() * 5)
-    ] as EventStatus,
+    status: getStatusForIndex(index),
   }));
 
 export default function OrganizerPage() {
@@ -76,12 +80,11 @@ export default function OrganizerPage() {
               incididunt ut labore et dolore magna aliqua.
             </p>
           </div>
-          <Button
-            className="bg-secondary hover:bg-secondary/80 text-whiteText px-5 font-bold py-2 rounded-md"
-            onClick={() => {}}
-          >
-            Create event
-          </Button>
+          <Link href="/organizer/event">
+            <Button className="bg-secondary hover:bg-secondary/80 text-whiteText px-5 font-bold py-2 rounded-md">
+              Create event
+            </Button>
+          </Link>
         </div>
 
         <div
@@ -163,9 +166,9 @@ export default function OrganizerPage() {
                             <path
                               d="M9.9551 3.17518H3.0561C2.53332 3.17518 2.03196 3.38286 1.66229 3.75252C1.29263 4.12218 1.08496 4.62355 1.08496 5.14633V18.9443C1.08496 19.4671 1.29263 19.9685 1.66229 20.3381C2.03196 20.7078 2.53332 20.9155 3.0561 20.9155H16.8541C17.3769 20.9155 17.8782 20.7078 18.2479 20.3381C18.6176 19.9685 18.8252 19.4671 18.8252 18.9443V12.0453M17.3469 1.69683C17.739 1.30474 18.2707 1.08447 18.8252 1.08447C19.3797 1.08447 19.9115 1.30474 20.3036 1.69683C20.6957 2.08891 20.9159 2.62069 20.9159 3.17518C20.9159 3.72968 20.6957 4.26146 20.3036 4.65354L10.9407 14.0165L6.99839 15.002L7.98396 11.0598L17.3469 1.69683Z"
                               stroke="currentColor"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                           </svg>
                         </button>
