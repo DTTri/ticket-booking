@@ -83,8 +83,17 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
 
+          # Test SSH connection with verbose output
+          echo "Testing SSH connection to $EC2_HOST..."
+          ssh -v -i private_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10 $EC2_USER@$EC2_HOST "echo SSH connection successful"
+
+          if [ $? -ne 0 ]; then
+            echo "SSH connection failed. Please check your EC2 instance security groups, network settings, and that the instance is running."
+            exit 1
+          fi
+
           # SSH into the EC2 instance and deploy
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
+          ssh -i private_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=60 $EC2_USER@$EC2_HOST << EOF
             # Login to Docker Hub
             echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
@@ -95,14 +104,82 @@ jobs:
             docker stop ticket-booking-container || true
             docker rm ticket-booking-container || true
 
-            # Run the new container
-            docker run -d --name ticket-booking-container -p 3000:3000 \
+            # Create a Docker network for the containers
+            docker network create ticket-app-network || true
+
+            # Run the Next.js application container
+            docker run -d --name ticket-booking-container \
+              --network ticket-app-network \
               -e NODE_ENV=production \
               -e DEPLOY_VERSION=$(date +%Y%m%d-%H%M%S) \
               ${{ secrets.DOCKER_HUB_USERNAME }}/ticket-booking-client:latest
 
+            # Create Nginx configuration
+            mkdir -p /home/$EC2_USER/nginx/conf.d
+
+            # Create Nginx configuration with proper variable substitution
+            DOMAIN="${{ secrets.DOMAIN_NAME }}"
+
+            cat > /home/$EC2_USER/nginx/conf.d/default.conf << EOF
+            server {
+                listen 80;
+                server_name ${DOMAIN};
+
+                location / {
+                    return 301 https://\$host\$request_uri;
+                }
+            }
+
+            server {
+                listen 443 ssl;
+                server_name ${DOMAIN};
+
+                ssl_certificate /etc/nginx/ssl/live/${DOMAIN}/fullchain.pem;
+                ssl_certificate_key /etc/nginx/ssl/live/${DOMAIN}/privkey.pem;
+
+                location / {
+                    proxy_pass http://ticket-booking-container:3000;
+                    proxy_set_header Host \$host;
+                    proxy_set_header X-Real-IP \$remote_addr;
+                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto \$scheme;
+                }
+            }
+            EOF
+
+            # Set up Certbot for SSL certificates
+            if [ ! -d "/home/$EC2_USER/certbot" ]; then
+              mkdir -p /home/$EC2_USER/certbot/conf /home/$EC2_USER/certbot/www
+            fi
+
+            # Run Certbot container to obtain SSL certificates if they don't exist
+            if [ ! -d "/home/$EC2_USER/certbot/conf/live/${{ secrets.DOMAIN_NAME }}" ]; then
+              docker run --rm \
+                -v /home/$EC2_USER/certbot/conf:/etc/letsencrypt \
+                -v /home/$EC2_USER/certbot/www:/var/www/certbot \
+                certbot/certbot certonly --standalone \
+                --agree-tos --no-eff-email \
+                -m ${{ secrets.ADMIN_EMAIL }} \
+                -d ${{ secrets.DOMAIN_NAME }}
+            fi
+
+            # Run Nginx container
+            docker stop nginx-proxy || true
+            docker rm nginx-proxy || true
+
+            docker run -d --name nginx-proxy \
+              --network ticket-app-network \
+              -p 80:80 -p 443:443 \
+              -v /home/$EC2_USER/nginx/conf.d:/etc/nginx/conf.d \
+              -v /home/$EC2_USER/certbot/conf:/etc/nginx/ssl \
+              -v /home/$EC2_USER/certbot/www:/var/www/certbot \
+              nginx:alpine
+
             # Clean up unused images
             docker image prune -f
+
+            # Set up certificate renewal cron job
+            echo "0 12 * * * docker run --rm -v /home/$EC2_USER/certbot/conf:/etc/letsencrypt -v /home/$EC2_USER/certbot/www:/var/www/certbot certbot/certbot renew --quiet && docker restart nginx-proxy" | crontab -
 
             # Logout from Docker Hub
             docker logout
