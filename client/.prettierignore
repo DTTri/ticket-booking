@@ -1,0 +1,16 @@
+# Ignore artifacts:
+.next
+out
+build
+dist
+node_modules
+public
+coverage
+
+# Ignore all HTML files:
+*.html
+
+# Ignore specific files
+next-env.d.ts
+package-lock.json
+yarn.lock
