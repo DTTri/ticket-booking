@@ -26,7 +26,6 @@ const textFieldVariants = cva("relative flex flex-col gap-1", {
 function TextField({
   className,
   variant,
-  size,
   label,
   placeholder,
   asChild = false,

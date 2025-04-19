@@ -5,7 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Search, Filter, ArrowUpDown, Calendar, Download, Eye } from "lucide-react";
 import Link from "next/link";
 
-const mockPayments = [
+// Define types for payment data
+interface Payment {
+  id: string;
+  eventId: string;
+  eventName: string;
+  customerName: string;
+  amount: number;
+  date: string;
+  status: "Completed" | "Pending" | "Failed" | "Refunded";
+  method: string;
+}
+
+// Mock payment data
+const mockPayments: Payment[] = [
   {
     id: "PAY-001",
     eventId: "EVT-001",
@@ -59,7 +72,7 @@ const mockPayments = [
 ];
 
 export default function PaymentsPage() {
-  const [payments, setPayments] = useState(mockPayments);
+  const [payments, setPayments] = useState<Payment[]>(mockPayments);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
@@ -95,8 +108,8 @@ export default function PaymentsPage() {
     }
 
     filteredPayments.sort((a, b) => {
-      const aValue = a[sortBy.field as keyof typeof a];
-      const bValue = b[sortBy.field as keyof typeof b];
+      const aValue = a[sortBy.field as keyof Payment];
+      const bValue = b[sortBy.field as keyof Payment];
 
       if (typeof aValue === "string" && typeof bValue === "string") {
         return sortBy.direction === "asc"

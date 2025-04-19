@@ -21,7 +21,50 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-const mockPaymentDetails = {
+// Define types for the payment data
+interface Ticket {
+  section: string;
+  row: string;
+  seat: string;
+  price: number;
+  quantity: number;
+}
+
+interface PaymentDetails {
+  id: string;
+  eventId: string;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  eventVenue: string;
+  eventLocation: string;
+
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+
+  transactionDate: string;
+  amount: number;
+  fees: number;
+  total: number;
+  status: "Completed" | "Pending" | "Failed" | "Refunded";
+  method: string;
+  cardType?: string;
+  cardLast4?: string;
+
+  tickets: Ticket[];
+
+  refundable: boolean;
+  refundDeadline: string;
+  notes: string;
+
+  // Optional fields that may be added after a refund
+  refundAmount?: number;
+  refundReason?: string;
+  refundDate?: string;
+}
+
+const mockPaymentDetails: PaymentDetails = {
   id: "PAY-001",
   eventId: "EVT-001",
   eventName: "Bien Hoa FC vs. Dong Nai FC",
@@ -56,7 +99,7 @@ const mockPaymentDetails = {
 export default function PaymentDetailsPage() {
   const params = useParams();
   const paymentId = params?.id as string;
-  const [payment, setPayment] = useState<any>(null);
+  const [payment, setPayment] = useState<PaymentDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showRefundDialog, setShowRefundDialog] = useState(false);
   const [refundReason, setRefundReason] = useState("");
@@ -95,13 +138,15 @@ export default function PaymentDetailsPage() {
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      setPayment({
-        ...payment,
-        status: "Refunded",
-        refundAmount: parseFloat(refundAmount.toString()),
-        refundReason,
-        refundDate: new Date().toISOString(),
-      });
+      if (payment) {
+        setPayment({
+          ...payment,
+          status: "Refunded" as const,
+          refundAmount: parseFloat(refundAmount.toString()),
+          refundReason,
+          refundDate: new Date().toISOString(),
+        });
+      }
 
       setShowRefundDialog(false);
       alert("Refund processed successfully");
@@ -113,7 +158,7 @@ export default function PaymentDetailsPage() {
     }
   };
 
-  const getStatusInfo = (status: string) => {
+  const getStatusInfo = (status: PaymentDetails["status"]) => {
     switch (status) {
       case "Completed":
         return {
@@ -237,7 +282,9 @@ export default function PaymentDetailsPage() {
             {payment.status === "Refunded" && (
               <div>
                 <p className="text-sm text-gray-500">Refund Date</p>
-                <p className="font-medium">{new Date(payment.refundDate).toLocaleString()}</p>
+                <p className="font-medium">
+                  {payment.refundDate ? new Date(payment.refundDate).toLocaleString() : "-"}
+                </p>
               </div>
             )}
           </div>
@@ -370,7 +417,7 @@ export default function PaymentDetailsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {payment.tickets.map((ticket: any, index: number) => (
+              {payment.tickets.map((ticket: Ticket, index: number) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {ticket.section}
