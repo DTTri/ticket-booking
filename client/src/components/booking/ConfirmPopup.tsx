@@ -1,6 +1,5 @@
 import React from "react";
-import { X } from 'lucide-react';
-
+import { X } from "lucide-react";
 
 interface PopupProps {
   eventName: string;
@@ -42,7 +41,11 @@ export default function ConfirmPopup({
             height={200}
             className="w-full h-full object-cover object-center"
           />
-          <X color="#000" className="absolute top-4 right-4 cursor-pointer hover:bg-gray-100 rounded-full" onClick={onClose} />
+          <X
+            color="#000"
+            className="absolute top-4 right-4 cursor-pointer hover:bg-gray-100 rounded-full"
+            onClick={onClose}
+          />
         </div>
 
         <div className="p-4">

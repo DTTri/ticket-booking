@@ -74,7 +74,6 @@ export const sampleEvents: Event[] = [
   },
 ];
 
-
 export const sampleSeats: Seat[] = [
   {
     SeatId: "Seat 1",

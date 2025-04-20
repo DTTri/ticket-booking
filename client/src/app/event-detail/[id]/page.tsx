@@ -33,11 +33,10 @@ export default function EventDetailPage() {
       try {
         const event = await fetchEventDetail(id as string);
         setSelectedEvent(event);
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Error fetching event detail:", error);
       }
-    }
+    };
     loadEventDataDetail();
   }, [id]);
 
@@ -51,7 +50,7 @@ export default function EventDetailPage() {
       <div className="w-full h-full flex flex-row">
         <div className="w-[38%] h-full overflow-hidden">
           <Image
-            src={selectedEvent?.Image || ''}
+            src={selectedEvent?.Image || ""}
             width={500}
             height={500}
             alt="Event"
