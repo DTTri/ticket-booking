@@ -7,7 +7,7 @@ import EventInfo from "@/components/home/EventInfo";
 import { sampleEvents } from "@/libs/place-holder.data";
 import { useState } from "react";
 
-export default function Home() {
+export default function HomePage() {
   const [startIndex, setStartIndex] = useState(0);
   // const [location, setLocation] = useState("");
   // const [match, setMatch] = useState("");
