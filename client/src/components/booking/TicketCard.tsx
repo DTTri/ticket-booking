@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 interface TicketCardProps {
@@ -29,9 +30,11 @@ export default function TicketCard({
 
       {/* QR Code */}
       <div className="bg-white rounded-lg p-4 flex justify-center items-center">
-        <img
+        <Image
           src="https://cdn.pixabay.com/photo/2013/07/12/14/45/qr-code-148732_1280.png" // Replace with actual QR code image
           alt="QR Code"
+          width={300}
+          height={400}
           className="w-full h-full object-cotain"
         />
       </div>
@@ -39,14 +42,16 @@ export default function TicketCard({
       {/* Event Details */}
       <div className="bg-white text-black rounded-lg p-4 flex flex-col gap-2">
         <div className="w-full pb-1 flex flex-col border-b border-[#02471F33] gap-1">
-            <div>
-                <p className="text-xs font-semibold">Event</p>
-                <p className="text-[16px] font-bold">{eventName}</p>
-            </div>
-            <div>
-                <p className="text-xs font-semibold">Time</p>
-                <p className="text-[16px] font-bold">{date} - {time}</p>
-            </div>
+          <div>
+            <p className="text-xs font-semibold">Event</p>
+            <p className="text-[16px] font-bold">{eventName}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold">Time</p>
+            <p className="text-[16px] font-bold">
+              {date} - {time}
+            </p>
+          </div>
         </div>
         <div className="flex justify-between">
           <div>
@@ -60,7 +65,9 @@ export default function TicketCard({
         </div>
         <div className="-mt-4">
           <p className="text-xs font-semibold">Section - Row</p>
-          <p className="text-[16px] font-bold">{section} - {row}</p>
+          <p className="text-[16px] font-bold">
+            {section} - {row}
+          </p>
         </div>
       </div>
     </div>

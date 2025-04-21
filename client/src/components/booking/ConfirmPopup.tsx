@@ -1,5 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
+import Image from "next/image";
 
 interface PopupProps {
   eventName: string;
@@ -34,7 +35,7 @@ export default function ConfirmPopup({
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <div className=" bg-white rounded-lg shadow-lg w-[450px]">
         <div className="relative w-full h-[200px] bg-gray-200 rounded-t-lg overflow-hidden">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1558465202-92356bf74344?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Event"
             width={450}

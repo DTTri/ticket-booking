@@ -5,10 +5,10 @@ import Seat from "@/models/Seat";
 
 export default function SeatOrderCard({
   seatOrder,
-  onClick,
+  onRemove,
 }: {
   seatOrder: Seat;
-  onClick: () => void;
+  onRemove: (seatId: string) => void;
 }) {
   return (
     <div className="w-[90%] relative h-[80px] border-1 border-[#000000] rounded-[4px] flex flex-row">
@@ -33,7 +33,7 @@ export default function SeatOrderCard({
       </div>
       <div
         className="absolute top-1 right-1 w-[15px] h-[15px] rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300"
-        onClick={onClick}
+        onClick={() => onRemove(seatOrder.SeatId)}
       >
         x
       </div>

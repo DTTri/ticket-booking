@@ -36,7 +36,11 @@ export default function BookingPage() {
     loadEventDataDetail();
   }, [eventId]);
 
-  const handleClick = () => {
+  const handleRemoveSeat = (seatId: string) => {
+    setSelectedSeats(prevSeats => prevSeats.filter(seat => seat.SeatId !== seatId));
+  };
+
+  const handleBookClick = () => {
     router.push(`/booking/payment/${eventId}`);
   };
 
@@ -58,7 +62,7 @@ export default function BookingPage() {
         </div>
         <div className="selectedSeats flex flex-col items-center gap-3">
           {selectedSeats.map((seat, index) => (
-            <SeatOrderCard key={index} seatOrder={seat} onClick={() => {}} />
+            <SeatOrderCard key={index} seatOrder={seat} onRemove={handleRemoveSeat} />
           ))}
         </div>
       </div>
@@ -81,7 +85,7 @@ export default function BookingPage() {
       )}
       <Button
         className="fixed bottom-4 left-1/6 py-3 px-8 text-xl font-bold rounded-4xl"
-        onClick={() => setIsOpenConfirmPopup(true)}
+        onClick={handleBookClick}
       >
         Book
       </Button>

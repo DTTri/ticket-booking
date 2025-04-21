@@ -1,15 +1,12 @@
 import React from "react";
-import { LockKeyholeOpen } from 'lucide-react';
+import { LockKeyholeOpen } from "lucide-react";
 
 interface TimeInfoConfirmPopupProps {
   minutes: number;
   onStart: () => void;
 }
 
-export default function TimeInfoConfirmPopup({
-  minutes,
-  onStart,
-}: TimeInfoConfirmPopupProps) {
+export default function TimeInfoConfirmPopup({ minutes, onStart }: TimeInfoConfirmPopupProps) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <div className="bg-white rounded-lg shadow-lg w-[400px] p-5 text-center">
