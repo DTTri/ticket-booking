@@ -14,6 +14,7 @@ const fetchBooking = async (eventId: string) => {
   //   throw new Error("Failed to fetch event detail");
   // }
   // return response.json();
+  console.log(eventId);
   return sampleEvents[0]; // Mocked data for now
 };
 

@@ -62,7 +62,7 @@ export default function PaymentPage() {
   const [cvv, setCvv] = useState("");
 
   //States for selected seats
-  const [selectedSeats, _setSelectedSeats] = useState<QRCodeType[]>(sampleQRCodeData);
+  const [selectedSeats, setSelectedSeats] = useState<QRCodeType[]>();
 
   useEffect(() => {
     const loadEventDataDetail = async () => {
@@ -70,6 +70,7 @@ export default function PaymentPage() {
         const event = await fetchBookingEvent(eventId as string);
         setCurEvent(event);
         setIsOpenInfoTimePopup(true);
+        setSelectedSeats(sampleQRCodeData);
       } catch (error) {
         console.error("Error fetching event detail:", error);
       }
@@ -291,7 +292,7 @@ export default function PaymentPage() {
                 </p>
               </div>
               <div className="w-full px-4 grid grid-cols-2 gap-4">
-                {selectedSeats.map((ticket, index) => (
+                {selectedSeats?.map((ticket, index) => (
                   <TicketCard
                     date={ticket.date}
                     eventName={ticket.eventName}
@@ -308,7 +309,7 @@ export default function PaymentPage() {
           )}
         </div>
       </div>
-      <div className="w-[25%] rounded-lg p-2 flex flex-col gap-3">
+      <div className="w-[28%] rounded-lg p-2 flex flex-col gap-3">
         {/* Match Image */}
         <div className="w-full h-[200px] bg-gray-200 rounded-[6px] overflow-hidden">
           <img
