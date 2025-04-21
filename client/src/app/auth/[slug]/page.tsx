@@ -42,23 +42,27 @@ export default function SignupPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
-    }, 5000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [slug]);
 
   return (
     <div className="w-full h-screen flex relative">
-      <div
-        className="absolute inset-0 w-full h-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${backgroundImages[currentIndex].src})`,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          opacity: 1,
-        }}
-      >
+     <div className="absolute inset-0 w-full h-full">
+        {backgroundImages.map((image, index) => (
+          <div
+            key={index}
+            //Load all images at once, but only show the current one
+            // This is a performance optimization to avoid flickering
+            className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
+              index === currentIndex ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              backgroundImage: `url(${image.src})`,
+            }}
+          ></div>
+        ))}
         <div className="absolute inset-0 bg-black/50"></div>
       </div>
 
@@ -70,19 +74,29 @@ export default function SignupPage() {
             className="text-[40px] font-bold text-[#fff] transition-opacity duration-1000 ease-in-out opacity-0"
             style={{ animation: "fade-in 1s forwards" }}
           >
-        {content[currentIndex].title}
+            {content[currentIndex].title}
           </p>
           <div
             key={`${currentIndex}-desc`} // Unique key for description
-            className="text-[16px] font-light text-[#fff] transition-opacity duration-1000 ease-in-out opacity-0"
+            className="text-[16px] font-light text-[#fff] transition-opacity duration-1000 ease-in-out opacity-0 mb-4"
             style={{ animation: "fade-in 1s forwards" }}
           >
-        {content[currentIndex].description}
+            {content[currentIndex].description}
+          </div>
+          <div className="flex flex-row items-center gap-2">
+            {Array.from({ length: 3 }, (_, index) => (
+              <div
+                key={index}
+                className={`w-15 h-2 rounded-4xl transition-all duration-300 ${
+                  index === currentIndex ? "bg-white" : "bg-gray-500"
+                }`}
+              ></div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div style={{ animation: "fade-in 1s forwards" }} className="relative w-[50%] h-full flex justify-center items-center z-10 transition-opacity duration-1000 ease-in-out opacity-0">
+      <div style={{ animation: "fade-in 1s forwards" }} className="relative w-[50%] h-full flex justify-center items-center z-10 pb-4 transition-opacity duration-1000 ease-in-out opacity-0">
         {slug === "signup" && (
           <SignUpForm
             onSignUp={() => {}} />
