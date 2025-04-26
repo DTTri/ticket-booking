@@ -1,8 +1,9 @@
 "use client";
 import ConfirmPopup from "@/components/booking/ConfirmPopup";
+import SeatMap from "@/components/booking/SeatMap";
 import SeatOrderCard from "@/components/booking/SeatOrderCard";
 import { Button } from "@/components/ui/button";
-import { sampleEvents, sampleSeats } from "@/libs/place-holder.data";
+import { sampleEvents } from "@/libs/place-holder.data";
 import Event from "@/models/Event";
 import Seat from "@/models/Seat";
 import { useParams, useRouter } from "next/navigation";
@@ -22,7 +23,7 @@ export default function BookingPage() {
   const { eventId } = useParams();
   const router = useRouter();
   const [curEvent, setCurEvent] = useState<Event>();
-  const [selectedSeats, setSelectedSeats] = useState<Seat[]>(sampleSeats);
+  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [isOpenConfirmPopup, setIsOpenConfirmPopup] = useState(false);
 
   useEffect(() => {
@@ -41,13 +42,24 @@ export default function BookingPage() {
     setSelectedSeats(prevSeats => prevSeats.filter(seat => seat.SeatId !== seatId));
   };
 
+  const handleSeatSelect = (seat: Seat) => {
+    setSelectedSeats(prevSeats => {
+      const existingSeat = prevSeats.find(s => s.SeatId === seat.SeatId);
+      if (existingSeat) {
+        return prevSeats.filter(s => s.SeatId !== seat.SeatId);
+      } else {
+        return [...prevSeats, seat];
+      }
+    });
+  };
+
   const handleBookClick = () => {
     router.push(`/booking/payment/${eventId}`);
   };
 
   return (
-    <div className=" w-full min-h-screen py-3 px-5 flex flex-row">
-      <div className="w-[40%] h-full py-3 px-4">
+    <div className="w-full h-[calc(100vh-80px)] py-3 px-5 flex flex-row">
+      <div className="w-[40%] h-full py-3 px-4 overflow-y-auto">
         <div className="bookingInfo w-full flex flex-col gap-3 border-b-1 border-[#D0D0D0] pb-3 mb-3">
           <h2 className="text-2xl font-bold text-[#1D1D1D]">{curEvent?.Name}</h2>
           <div className="flex flex-col">
@@ -59,7 +71,9 @@ export default function BookingPage() {
           <p className="text-[#1D1D1D] text-[14px] font-semibold">
             {selectedSeats.length} Selected Seats
           </p>
-          <p className="text-[#02471F] text-[16px] font-bold">Total price: $40</p>
+          <p className="text-[#02471F] text-[16px] font-bold">
+            Total price: ${selectedSeats.length * 10}
+          </p>
         </div>
         <div className="selectedSeats flex flex-col items-center gap-3">
           {selectedSeats.map((seat, index) => (
@@ -67,7 +81,9 @@ export default function BookingPage() {
           ))}
         </div>
       </div>
-      <div className="w-[60%]">{/* Seat Map Component will go here */}</div>
+      <div className="w-[60%] h-full">
+        <SeatMap selectedSeats={selectedSeats} onSeatSelect={handleSeatSelect} />
+      </div>
       {isOpenConfirmPopup && (
         <ConfirmPopup
           eventName="FC Barcelona vs Real Madrid"
