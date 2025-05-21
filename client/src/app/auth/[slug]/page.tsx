@@ -8,6 +8,8 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import SignUpForm from "@/components/auth/SignUpForm";
 import LoginForm from "@/components/auth/LoginForm";
+import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
+import { useRouter } from "next/router";
 
 type Content = {
   title: string;
@@ -37,7 +39,7 @@ const backgroundImages = [bg_auth1, bg_auth2, bg_auth3];
 export default function SignupPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const { slug } = useParams();
-
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -99,7 +101,9 @@ export default function SignupPage() {
       <div style={{ animation: "fade-in 1s forwards" }} className="relative w-[50%] h-full flex justify-center items-center z-10 pb-4 transition-opacity duration-1000 ease-in-out opacity-0">
         {slug === "signup" && (
           <SignUpForm
-            onSignUp={() => {}} />
+            onSignUp={() => {
+              router.push("/auth/login");
+            }} />
         )}
         {slug === "login" && (
           <LoginForm
@@ -107,6 +111,13 @@ export default function SignupPage() {
             onForgotPassword={() => {}}
           />
         )}
+        {
+          slug === "forgot-password" && (
+            <ForgotPasswordForm
+              onResetRequest={() => {}}
+            />
+          )
+        }
       </div>
     </div>
   );
