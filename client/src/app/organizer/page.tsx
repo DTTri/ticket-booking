@@ -1,8 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import LoadingSpinner from "@/components/ui/loading";
+import { useEventList } from "@/hooks/useEvents";
+import { EventStatus } from "@/models/Event";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const customStyles = `
   .hide-scrollbar {
@@ -14,55 +17,52 @@ const customStyles = `
   }
 `;
 
-type EventStatus = "Draft" | "Published" | "Submit for Approval" | "Postponed" | "Scheduled";
+// // Use a deterministic pattern for status to avoid hydration mismatch
+// const getStatusForIndex = (index: number): EventStatus => {
+//   const statuses: EventStatus[] = [
+//     "Draft",
+//     "Published",
+//     "Submit for Approval",
+//     "Postponed",
+//     "Scheduled",
+//   ];
+//   return statuses[index % statuses.length];
+// };
 
-interface Event {
-  id: number;
-  name: string;
-  date: string;
-  sold: number;
-  available: number;
-  revenue: number;
-  status: EventStatus;
-}
-
-// Use a deterministic pattern for status to avoid hydration mismatch
-const getStatusForIndex = (index: number): EventStatus => {
-  const statuses: EventStatus[] = [
-    "Draft",
-    "Published",
-    "Submit for Approval",
-    "Postponed",
-    "Scheduled",
-  ];
-  return statuses[index % statuses.length];
-};
-
-const sampleEvents: Event[] = Array(10)
-  .fill(null)
-  .map((_, index) => ({
-    id: index + 1,
-    name: "FC Barcelona vs Real Madrid",
-    date: "Apr 1 2025 7:00pm",
-    sold: 60,
-    available: 240,
-    revenue: 8900,
-    status: getStatusForIndex(index),
-  }));
+// const sampleEvents: Event[] = Array(10)
+//   .fill(null)
+//   .map((_, index) => ({
+//     id: index + 1,
+//     name: "FC Barcelona vs Real Madrid",
+//     date: "Apr 1 2025 7:00pm",
+//     sold: 60,
+//     available: 240,
+//     revenue: 8900,
+//     status: getStatusForIndex(index),
+//   }));
 
 export default function OrganizerPage() {
-  const [events] = useState<Event[]>(sampleEvents);
+  const { events, error, isLoadingList, loadEvents } = useEventList();
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  if (isLoadingList) {
+    return <LoadingSpinner />;
+  }
+
   const getStatusStyle = (status: EventStatus) => {
     switch (status) {
       case "Draft":
         return "text-gray-700";
       case "Published":
         return "text-blue-700";
-      case "Submit for Approval":
+      case "Submit for approval":
         return "text-yellow-700";
       case "Postponed":
         return "text-red-700";
-      case "Scheduled":
+      case "Rescheduled":
         return "text-green-700";
       default:
         return "";
@@ -135,24 +135,31 @@ export default function OrganizerPage() {
             <table className="w-full table-fixed">
               <tbody className="bg-white divide-y divide-darkStroke">
                 {events.map(event => (
-                  <tr key={event.id} className="hover:bg-gray-50">
+                  <tr key={event.eventId} className="hover:bg-gray-50">
                     <td className="w-[3%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      {event.id}
+                      {event.eventId}
                     </td>
                     <td className="w-[25%] py-3 text-center whitespace-nowrap text-sm font-medium text-darkText">
                       {event.name}
                     </td>
                     <td className="w-[15%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      {event.date}
+                      {event.startDateTime.toLocaleString("en-US", {
+                        month: "short",
+                        day: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
                     </td>
                     <td className="w-[10%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      {event.sold}
+                      {}
                     </td>
                     <td className="w-[10%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      {event.available}
+                      {}
                     </td>
                     <td className="w-[10%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      ${event.revenue.toLocaleString()}
+                      ${}
                     </td>
                     <td className="w-[10%] py-3 text-center whitespace-nowrap">
                       <span className={`text-sm ${getStatusStyle(event.status)}`}>
@@ -160,7 +167,7 @@ export default function OrganizerPage() {
                       </span>
                     </td>
                     <td className="w-[7%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      <Link href={`/organizer/event/${event.id}`}>
+                      <Link href={`/organizer/event/${event.eventId}`}>
                         <button className="text-secondary hover:text-secondary/70">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

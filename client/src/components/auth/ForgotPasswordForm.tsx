@@ -1,8 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
 import { TextField } from "../ui/textinput";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { useForgotPassword } from "@/hooks/user/useUser";
+import { useForgotPassword } from "@/hooks/useUser";
 
 export default function ForgotPasswordForm({
   onResetRequest,
@@ -12,7 +14,7 @@ export default function ForgotPasswordForm({
   const [email, setEmail] = useState("");
 
   const { request, resetState, status, error: forgotPasswordErrorHook } = useForgotPassword();
-  const isSubmitted = status === 'succeeded';
+  const isSubmitted = status === "succeeded";
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
 
@@ -52,8 +54,13 @@ export default function ForgotPasswordForm({
                 required
               />
             </div>
-            <Button type="submit" onClick={handleSubmit} className="w-full mt-4" disabled={status === 'loading'}>
-                SEND RESET LINK
+            <Button
+              type="submit"
+              onClick={handleSubmit}
+              className="w-full mt-4"
+              disabled={status === "loading"}
+            >
+              SEND RESET LINK
             </Button>
           </form>
         </>
@@ -83,7 +90,7 @@ export default function ForgotPasswordForm({
           <p className="text-sm text-gray-500">
             Didn't receive the email? Check your spam folder or{" "}
             <button
-              onClick={resetState} 
+              onClick={resetState}
               className="text-[#2ECC71] hover:underline cursor-pointer font-semibold"
             >
               try again
@@ -106,7 +113,9 @@ export default function ForgotPasswordForm({
         <Link href="/auth/signup" className="text-black font-bold hover:underline">
           SIGN UP
         </Link>
-        {status === 'failed' && forgotPasswordErrorHook && <p className="text-red-500 text-sm text-center mt-4">{forgotPasswordErrorHook}</p>}
+        {status === "failed" && forgotPasswordErrorHook && (
+          <p className="text-red-500 text-sm text-center mt-4">{forgotPasswordErrorHook}</p>
+        )}
       </p>
     </div>
   );

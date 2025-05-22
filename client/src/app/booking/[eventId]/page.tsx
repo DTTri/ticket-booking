@@ -4,7 +4,7 @@ import SeatMap from "@/components/booking/SeatMap";
 import SeatOrderCard from "@/components/booking/SeatOrderCard";
 import { Button } from "@/components/ui/button";
 import { sampleEvents } from "@/libs/place-holder.data";
-import Event from "@/models/Event";
+import Event from "@/models/event/Event";
 import Seat from "@/models/Seat";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

@@ -27,8 +27,9 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await authService.login(credentials);
       return response;
-    } catch (error) {
-      return rejectWithValue(error);
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -41,7 +42,10 @@ export const signupUser = createAsyncThunk(
       // TODO: Handle the response as needed
       return data as User;
     } catch (error: any) {
-      return rejectWithValue(error);
+      //The error handling is done in the slice
+      //error will be passed to the ActionPayload
+      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -53,7 +57,8 @@ export const requestPasswordReset = createAsyncThunk(
       const data = await authService.forgotPassword(email);
       return data;
     } catch (error: any) {
-      return rejectWithValue(error);
+      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
+      return rejectWithValue(errorMessage);
     }
   }
 );

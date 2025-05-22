@@ -1,35 +1,41 @@
 import axios from 'axios';
 
 // Define backend API base URL
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8081/api'; // Replace with your actual backend URL
 
-const authService = {
-  login: async (credentials: any) => {
+class AuthService {
+  API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8083/api'; // Replace with your actual backend URL
+  
+  async login(credentials: any) {
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, credentials);
+      const response = await axios.post(`${this.API_URL}/auth/login`, credentials);
       return response.data;
     } catch (error: any) {
-      throw error.response?.data?.message || error.message;
+      console.log("Fetch user error: " + error.response?.data?.message || error.message);
+      throw error;
     }
-  },
+  }
 
-  signup: async (userData: any) => {
+  async signup(userData: any) {
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, userData);
+      const response = await axios.post(`${this.API_URL}/auth/signup`, userData);
       return response.data;
     } catch (error: any) {
-      throw error.response?.data?.message || error.message;
+      console.log("Fetch user error: " + error.response?.data?.message || error.message);
+      throw error;
     }
-  },
+  }
 
-  forgotPassword: async (email: string) => {
+  async forgotPassword(email: string) {
     try {
-      const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      const response = await axios.post(`${this.API_URL}/auth/forgot-password`, { email });
       return response.data;
     } catch (error: any) {
-      throw error.response?.data?.message || error.message;
+      console.log("Fetch user error: " + error.response?.data?.message || error.message);
+      throw error;
     }
-  },
-};
+  }
+}
+
+const authService = new AuthService();
 
 export default authService;

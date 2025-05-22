@@ -1,6 +1,6 @@
 "use client";
 import { sampleEvents } from "@/libs/place-holder.data";
-import Event from "@/models/Event";
+import Event from "@/models/event/Event";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import TicketCard from "@/components/booking/TicketCard";

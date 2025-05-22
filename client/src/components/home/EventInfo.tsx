@@ -1,4 +1,4 @@
-import Event from "@/models/Event";
+import Event from "@/models/event/Event";
 import Image from "next/image";
 
 interface MatchProps {

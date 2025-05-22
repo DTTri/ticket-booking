@@ -1,9 +1,9 @@
 import React from 'react';
 
 interface LoadingSpinnerProps {
-  size?: string; // Ví dụ: 'w-12 h-12'
-  color?: string; // Ví dụ: 'border-blue-500'
-  thickness?: string; // Ví dụ: 'border-t-4'
+  size?: string;
+  color?: string; 
+  thickness?: string;
   className?: string;
 }
 

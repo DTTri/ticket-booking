@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import bg_auth1 from "../../../../public/bg_auth_1.jpg";
 import bg_auth2 from "../../../../public/bg_auth_2.jpg";
@@ -9,7 +10,7 @@ import { useParams } from "next/navigation";
 import SignUpForm from "@/components/auth/SignUpForm";
 import LoginForm from "@/components/auth/LoginForm";
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 type Content = {
   title: string;

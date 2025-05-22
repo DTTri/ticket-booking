@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user/userSlice";
+import eventReducer from "./event/eventSlice";
+import venueReducer from "./venue/venueSlice";
 
 export const store = configureStore({
   reducer: {
-    user: userReducer
+    user: userReducer,
+    events: eventReducer,
+    venues: venueReducer,
   },
   //   middleware: getDefaultMiddleware =>
   //     getDefaultMiddleware({

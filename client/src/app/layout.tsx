@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { fontSans } from "@/libs/fonts";
 import Header from "@/components/Header";
-import { Provider } from "react-redux";
-import { store } from "@/store/store";
+import AppProvider from "./provider";
 
 export const metadata: Metadata = {
   title: "Ticket Booking",
@@ -20,12 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Provider store={store}>
+      <AppProvider>
         <body className="w-full min-h-screen">
           <Header />
           <main className={`${fontSans}`}>{children}</main>
         </body>
-      </Provider>
+      </AppProvider>
     </html>
   );
 }

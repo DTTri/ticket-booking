@@ -1,12 +1,14 @@
-import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+"use client";
+
+import { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import {
   loginUser,
   signupUser,
   logout as logoutActionCreator,
   requestPasswordReset,
-  resetForgotPasswordState as resetForgotPasswordStateActionCreator, 
-} from '@/store/user/userSlice';
+  resetForgotPasswordState as resetForgotPasswordStateActionCreator,
+} from "@/store/user/userSlice";
 import {
   selectAuthUser,
   selectIsAuthenticated,
@@ -14,9 +16,9 @@ import {
   selectAuthError,
   selectForgotPasswordStatus,
   selectForgotPasswordError,
-} from '@/store/user/userSelector';
-import type { LoginCredentials } from '@/models/User'; 
-import type { UserSignupDTO } from '@/models/DTO/UserDTO'; 
+} from "@/store/user/userSelector";
+import type { LoginCredentials } from "@/models/User";
+import type { UserSignupDTO } from "@/models/DTO/UserDTO";
 
 /**
  * Hook to get current authentication session data.

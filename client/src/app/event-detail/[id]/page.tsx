@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 import { sampleEvents } from "@/libs/place-holder.data";
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
-import Event from "@/models/Event";
+import Event from "@/models/event/Event";
 import { Clock, MapPinned } from "lucide-react";
 
 type InfoSelect = "details" | "about" | "tickets";

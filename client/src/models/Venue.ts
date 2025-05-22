@@ -1,31 +1,28 @@
 // Venue model for the interactive seat map
 
 export interface Seat {
-  id: string;
-  number: string;
-  status: "available" | "sold" | "pending" | "selected";
-}
-
-export interface Row {
-  id: string;
-  name: string;
-  seats: Seat[];
+  seatId: string;
+  sectionId: string;
+  seatNumber: string;
+  rowNumber: string;
+  seatInRow: number;
 }
 
 export interface Section {
-  id: string;
+  sectionId: string;
+  venueId: string;
   name: string;
-  price: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotation?: number;
-  rows: Row[];
+  capacity: number;
+  seats: Seat[];
 }
 
 export interface Venue {
-  id: string;
+  venueId: string;
   name: string;
+  address: string;
+  city: string;
+  ownerUserId: string;
   sections: Section[];
+  createdAt: string;
+  updatedAt: string;
 }
