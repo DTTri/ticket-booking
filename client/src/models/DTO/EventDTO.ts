@@ -1,5 +1,7 @@
+import { EventCategory } from "../Event";
+
 export type CreateEventDTO = {
-  title: string;
+  name: string;
   description: string;
   category: EventCategory;
   startDateTime: string;
@@ -8,6 +10,7 @@ export type CreateEventDTO = {
   venueName: string;
   venueAddress: string;
   poster: string;
+  organizerUserId: string;
   images: string[];
   details?: string;
   sectionPricing: SectionPricingDTO[];
@@ -35,9 +38,3 @@ export type SectionPricingDTO = {
     sectionId: string;
     price: number;
 };
-
-export enum EventCategory{
-    CONCERT = "CONCERT",
-    MATCH = "MATCH",
-    OTHERS = "OTHERS"
-}

@@ -9,6 +9,7 @@ import {
   rescheduleEvent,
   postponeEvent,
   cancelEvent,
+  approveEvent,
   submitEvent,
   clearCurrentEvent,
   clearMutationError,
@@ -42,7 +43,7 @@ export const useEventList = () => {
   return {
     events,
     isLoadingList,
-    error: errorList,
+    errorEventList: errorList,
     loadEvents: loadAllEvents,
   };
 };
@@ -69,8 +70,8 @@ export const useEventDetails = () => {
 
   return {
     event: currentEvent,
-    isLoading: isLoadingDetails,
-    error: errorDetails,
+    isLoadingEventDetails: isLoadingDetails,
+    errorEventDetails: errorDetails,
     loadEvent: loadEventById,
     clearDetails: clearEventDetails,
   };
@@ -126,6 +127,14 @@ export const useEventMutations = () => {
     [dispatch]
   );
 
+  const approveExistingEvent = useCallback(
+    (eventId: string) => {
+      return dispatch(approveEvent(eventId)).unwrap();
+    },
+    [dispatch]
+  );
+
+
   const submitExistingEvent = useCallback(
     (eventId: string) => {
       return dispatch(submitEvent(eventId)).unwrap();
@@ -138,11 +147,12 @@ export const useEventMutations = () => {
   }, [dispatch]);
 
   return {
-    isLoading: isLoadingMutation,
-    error: errorMutation,
+    isLoadingEventMuatation: isLoadingMutation,
+    errorEventMutation: errorMutation,
     createEvent: createNewEvent,
     updateEvent: updateExistingEvent,
     removeEvent: removeExistingEvent,
+    approveEvent: approveExistingEvent,
     rescheduleEvent: rescheduleExistingEvent,
     postponeEvent: postponeExistingEvent,
     cancelEvent: cancelExistingEvent,

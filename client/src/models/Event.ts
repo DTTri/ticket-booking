@@ -2,7 +2,7 @@ type Event = {
   eventId: string;
   name: string;
   description: string;
-  category: string;
+  category: EventCategory;
   startDateTime: Date;
   endDateTime: Date;
   status: EventStatus;
@@ -18,13 +18,17 @@ type Event = {
   sectionPricing: EventSectionPricing[];
 };
 
-type EventSectionPricing = {
-  id: string;
+export type EventSectionPricing = {
   eventId: string;
   sectionId: string;
   price: number;
 }
 
+export enum EventCategory{
+    CONCERT = "CONCERT",
+    MATCH = "MATCH",
+    OTHERS = "OTHERS"
+}
 
 export enum EventStatus {
   DRAFT = "Draft",
@@ -33,6 +37,7 @@ export enum EventStatus {
   POSTPONED = "Postponed",
   RESCHEDULED = "Rescheduled",
   CANCELED = "Canceled",
+  REJECTED = "Rejected"
 }
 
 export default Event;

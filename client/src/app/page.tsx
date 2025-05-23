@@ -5,14 +5,33 @@ import pngguru from "../../public/pngguru.svg";
 import { Button } from "@/components/ui/button";
 import EventInfo from "@/components/home/EventInfo";
 import { sampleEvents } from "@/libs/place-holder.data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useEventList } from "@/hooks/useEvents";
+import LoadingSpinner from "@/components/ui/loading";
 
 export default function HomePage() {
   const [startIndex, setStartIndex] = useState(0);
-  // const [location, setLocation] = useState("");
-  // const [match, setMatch] = useState("");
-  // const [date, setDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [match, setMatch] = useState("");
+  const [date, setDate] = useState("");
   const itemsPerPage = 3;
+
+  const { events, isLoadingList, loadEvents } = useEventList();
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        await loadEvents();
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+    fetchEvents();
+  }, [loadEvents]);
+
+  if(isLoadingList) {
+    <LoadingSpinner />
+  }
 
   const handleNext = () => {
     if (startIndex + itemsPerPage < sampleEvents.length) {
@@ -104,8 +123,8 @@ export default function HomePage() {
                 transform: `translateX(-${startIndex * (100 / itemsPerPage)}%)`,
               }}
             >
-              {sampleEvents.map(event => (
-                <div key={event.Guid} className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4">
+              {events.map(event => (
+                <div key={event.eventId} className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4">
                   <EventInfo event={event} />
                 </div>
               ))}

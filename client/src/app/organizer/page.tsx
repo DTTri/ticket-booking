@@ -42,7 +42,7 @@ const customStyles = `
 //   }));
 
 export default function OrganizerPage() {
-  const { events, error, isLoadingList, loadEvents } = useEventList();
+  const { events, errorEventList, isLoadingList, loadEvents } = useEventList();
 
   useEffect(() => {
     loadEvents();
@@ -134,10 +134,10 @@ export default function OrganizerPage() {
           <div className="overflow-y-auto flex-grow hide-scrollbar">
             <table className="w-full table-fixed">
               <tbody className="bg-white divide-y divide-darkStroke">
-                {events.map(event => (
+                {events.map((event, index) => (
                   <tr key={event.eventId} className="hover:bg-gray-50">
                     <td className="w-[3%] py-3 text-center whitespace-nowrap text-sm text-darkText">
-                      {event.eventId}
+                      {index + 1}
                     </td>
                     <td className="w-[25%] py-3 text-center whitespace-nowrap text-sm font-medium text-darkText">
                       {event.name}

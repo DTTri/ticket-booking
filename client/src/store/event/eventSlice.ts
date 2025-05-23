@@ -118,6 +118,17 @@ export const cancelEvent = createAsyncThunk<Event, string>(
   }
 );
 
+export const approveEvent = createAsyncThunk<Event, string>(
+  "events/approve",
+  async (eventId, { rejectWithValue }) => {
+    try {
+      return await eventService.approveEvent(eventId);
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const submitEvent = createAsyncThunk<Event, string>(
   "events/submit",
   async (eventId, { rejectWithValue }) => {
@@ -273,6 +284,25 @@ const eventSlice = createSlice({
         }
       })
       .addCase(cancelEvent.rejected, (state, action) => {
+        state.isLoadingMutation = false;
+        state.errorMutation = action.payload as string;
+      })
+      // approveEvent
+      .addCase(approveEvent.pending, state => {
+        state.isLoadingMutation = true;
+        state.errorMutation = null;
+      })
+      .addCase(approveEvent.fulfilled, (state, action: PayloadAction<Event>) => {
+        state.isLoadingMutation = false;
+        const index = state.events.findIndex(event => event.eventId === action.payload.eventId);
+        if (index !== -1) {
+          state.events[index] = action.payload;
+        }
+        if (state.currentEvent?.eventId === action.payload.eventId) {
+          state.currentEvent = action.payload;
+        }
+      })
+      .addCase(approveEvent.rejected, (state, action) => {
         state.isLoadingMutation = false;
         state.errorMutation = action.payload as string;
       })

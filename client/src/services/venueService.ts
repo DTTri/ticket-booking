@@ -8,7 +8,7 @@ class VenueService {
 
   async getAllVenues() {
     try {
-      const response = await axios.get(`${this.API_URL}/venues`);
+      const response = await axios.get(`${this.API_URL}/Venues`);
       return response.data;
     } catch (error: any) {
       console.error("Fetch venues error:", error.response?.data?.message || error.message);
@@ -18,7 +18,7 @@ class VenueService {
 
   async getVenueById(venueId: string) {
     try {
-      const response = await axios.get(`${this.API_URL}/venues/${venueId}`);
+      const response = await axios.get(`${this.API_URL}/Venues/${venueId}`);
       return response.data;
     } catch (error: any) {
       console.error("Fetch venue by ID error:", error.response?.data?.message || error.message);
@@ -28,7 +28,7 @@ class VenueService {
 
   async createVenue(venueData: CreateVenueDTO): Promise<Venue> {
     try {
-      const response = await axios.post<any>(`${this.API_URL}`, venueData);
+      const response = await axios.post<any>(`${this.API_URL}/Venues`, venueData);
       return response.data;
     } catch (error: any) {
       console.error("Create venue error:", error.response?.data?.message || error.message);
@@ -38,7 +38,7 @@ class VenueService {
 
   async updateVenue(venueId: string, venueData: UpdateEventDTO): Promise<Venue> {
     try {
-      const response = await axios.put<any>(`${this.API_URL}/${venueId}`, venueData);
+      const response = await axios.put<any>(`${this.API_URL}/Venues/${venueId}`, venueData);
       return response.data;
     } catch (error: any) {
       console.error(`Update venue (${venueId}) error:`, error.response?.data?.message || error.message);
@@ -48,7 +48,7 @@ class VenueService {
 
   async deleteVenue(venueId: string): Promise<void> {
     try {
-      await axios.delete(`${this.API_URL}/${venueId}`);
+      await axios.delete(`${this.API_URL}/Venues/${venueId}`);
     } catch (error: any) {
       console.error(`Delete venue (${venueId}) error:`, error.response?.data?.message || error.message);
       throw error;
@@ -57,7 +57,7 @@ class VenueService {
 
   async getAllSectionsForVenue(venueId: string): Promise<Section[]> {
     try {
-      const response = await axios.get<any[]>(`${this.API_URL}/venues}/${venueId}/sections`);
+      const response = await axios.get<any[]>(`${this.API_URL}/venues/${venueId}/sections`);
       return response.data;
     } catch (error: any) {
       console.error(`Fetch sections for venue (${venueId}) error:`, error.response?.data?.message || error.message);

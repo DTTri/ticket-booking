@@ -2,7 +2,6 @@ import axios from "axios";
 import Event, { EventStatus } from "../models/Event";
 import {
   CreateEventDTO,
-  EventCategory,
   RescheduleEventDTO,
   UpdateEventDTO,
 } from "../models/DTO/EventDTO";
@@ -106,6 +105,19 @@ class EventService {
     } catch (error: any) {
       console.error(
         `Cancel event (${eventId}) error:`,
+        error.response?.data?.message || error.message
+      );
+      throw error;
+    }
+  }
+
+  async approveEvent(eventId: string) {
+    try {
+      const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/approve`);
+      return this.parseEventDates(response.data);
+    } catch (error: any) {
+      console.error(
+        `Approve event (${eventId}) error:`,
         error.response?.data?.message || error.message
       );
       throw error;

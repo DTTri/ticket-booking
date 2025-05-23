@@ -33,14 +33,14 @@ export const useVenueList = () => {
   const venues = useAppSelector(selectAllVenues);
   const isLoadingList = useAppSelector(selectIsLoadingVenuesList);
   const error = useAppSelector(selectVenuesListError);
-  const loadAllEvents = useCallback(() => {
+  const loadVenues = useCallback(() => {
     return dispatch(fetchAllVenues());
   }, [dispatch]);
 
-  return { venues, isLoadingList, error, loadAllEvents };
+  return { venues, isLoadingList, error, loadVenues };
 };
 
-export const useEventDetails = () => {
+export const useVenueDetails = () => {
   const dispatch = useAppDispatch();
   const currentVenue = useAppSelector(selectCurrentVenue);
   const sections = useAppSelector(selectCurrentVenueSections);
@@ -72,7 +72,7 @@ export const useEventDetails = () => {
   };
 };
 
-export const useEventMutation = () => {
+export const useVenueMutations = () => {
   const dispatch = useAppDispatch();
   const isLoadingMutation = useAppSelector(selectIsLoadingVenueMutation);
   const error = useAppSelector(selectVenueMutationError);
