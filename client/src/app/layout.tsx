@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { fontSans } from "@/libs/fonts";
 import Header from "@/components/Header";
+import AppProvider from "./provider";
 
 export const metadata: Metadata = {
   title: "Ticket Booking",
@@ -16,12 +17,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+
+  
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="w-full min-h-screen">
-        <Header />
-        <main className={`${fontSans}`}>{children}</main>
-      </body>
+      <AppProvider>
+        <body className="w-full min-h-screen">
+          <Header />
+          <main className={`${fontSans}`}>{children}</main>
+        </body>
+      </AppProvider>
     </html>
   );
 }

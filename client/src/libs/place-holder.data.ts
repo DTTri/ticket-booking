@@ -1,4 +1,4 @@
-import Event from "@/models/Event";
+import Event from "@/models/event/Event";
 import Seat from "@/models/Seat";
 
 export const sampleEvents: Event[] = [

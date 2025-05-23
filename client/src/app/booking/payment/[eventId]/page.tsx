@@ -2,7 +2,7 @@
 import TimeCount from "@/components/booking/TimeCount";
 import TimeInfoConfirmPopup from "@/components/booking/TimeInfoConfirmPopup";
 import { sampleEvents } from "@/libs/place-holder.data";
-import Event from "@/models/Event";
+import Event from "@/models/event/Event";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { TextField } from "@/components/ui/textinput";

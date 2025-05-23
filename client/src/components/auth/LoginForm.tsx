@@ -1,13 +1,17 @@
-import{ useState } from "react";
+"use client";
+
+import { useState } from "react";
 import { TextField } from "../ui/textinput";
 import Link from "next/link";
+import { Button } from "../ui/button";
+import { useLogin } from "@/hooks/useUser";
 
 export default function LoginForm({
-    onLogin,
-    onForgotPassword,
-    }: {
-    onLogin: () => void;
-    onForgotPassword: () => void;
+  onLogin,
+  onForgotPassword,
+}: {
+  onLogin: () => void;
+  onForgotPassword: () => void;
 }) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -15,6 +19,18 @@ export default function LoginForm({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setPassword(e.target.value);
+
+  const { login, isLoading, error, isAuthenticated } = useLogin();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent default form submission
+    try {
+      //await login({ name, password });
+      // if (isAuthenticated) router.push('/dashboard');
+    } catch (loginError: any) {
+      console.error("Login failed:", loginError.message || loginError);
+    }
+  };
 
   return (
     <div className="w-[400px] p-8 rounded-lg shadow-lg bg-white">
@@ -49,12 +65,9 @@ export default function LoginForm({
           />
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-[#2ECC71] text-white font-bold py-2 rounded-md hover:bg-[#28b767] transition"
-        >
-          GET STARTED
-        </button>
+        <Button type="submit" onClick={onLogin}>
+          CONTINUE
+        </Button>
       </form>
 
       <div className="flex items-center my-4">
@@ -64,9 +77,12 @@ export default function LoginForm({
       </div>
 
       <p className="text-center text-sm text-gray-500">
-        New user?{" "}
         <Link href="/auth/signup" className="text-black font-bold hover:underline">
-          SIGN UP HERE
+          SIGN UP
+        </Link>{" "}
+        OR{" "}
+        <Link href="/auth/forgot-password" className="text-black font-bold hover:underline">
+          FORGOT PASSWORD
         </Link>
       </p>
     </div>

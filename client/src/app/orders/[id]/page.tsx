@@ -98,7 +98,7 @@ export default function OrderDetailsPage() {
         <div className="flex flex-col gap-2">
           <div className="w-full flex flex-row justify-between items-center gap-1">
             <p className="text-sm text-gray-500">Match</p>
-            <p className="text-lg font-bold">{curEvent?.Name}</p>
+            <p className="text-lg font-bold">{curEvent?.name}</p>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Seats</p>
@@ -106,11 +106,11 @@ export default function OrderDetailsPage() {
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Location</p>
-            <p className="text-base font-semibold">{curEvent?.VenueId}</p>
+            <p className="text-base font-semibold">{curEvent?.venueId}</p>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Time</p>
-            <p className="text-base font-semibold">{curEvent?.StartDateTime}</p>
+            <p className="text-base font-semibold">{curEvent?.startDateTime.toISOString()}</p>
           </div>
         </div>
 
