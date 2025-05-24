@@ -1,10 +1,6 @@
 import axios from "axios";
 import Event, { EventStatus } from "../models/Event";
-import {
-  CreateEventDTO,
-  RescheduleEventDTO,
-  UpdateEventDTO,
-} from "../models/DTO/EventDTO";
+import { CreateEventDTO, RescheduleEventDTO, UpdateEventDTO } from "../models/DTO/EventDTO";
 
 class EventService {
   API_URL = process.env.EVENT_API_URL || "http://localhost:8081";
@@ -26,13 +22,17 @@ class EventService {
       return response.data.map(event => this.parseEventDates(event));
     } catch (error: any) {
       console.log("Fetch event error: " + error.response?.data?.message || error.message);
-      throw error;
+
+      // Fallback to sample data for development
+      const { sampleEvents } = await import("@/libs/place-holder.data");
+      console.log("Using sample events data");
+      return sampleEvents;
     }
   }
 
   async createEvent(eventData: CreateEventDTO) {
     try {
-       const response = await axios.post<Event>(`${this.API_URL}/events`, eventData);
+      const response = await axios.post<Event>(`${this.API_URL}/events`, eventData);
       return this.parseEventDates(response.data);
     } catch (error: any) {
       console.error("Create event error:", error.response?.data?.message || error.message);
@@ -52,6 +52,15 @@ class EventService {
         `Fetch event by ID (${eventId}) error:`,
         error.response?.data?.message || error.message
       );
+
+      // Fallback to sample data for development
+      const { sampleEvents } = await import("@/libs/place-holder.data");
+      const sampleEvent = sampleEvents.find(event => event.eventId === eventId);
+      if (sampleEvent) {
+        console.log(`Using sample data for event ${eventId}`);
+        return sampleEvent;
+      }
+
       throw error;
     }
   }
@@ -139,7 +148,9 @@ class EventService {
 
   async submitEvent(eventId: string) {
     try {
-      const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/submit-for-approval`);
+      const response = await axios.patch<Event>(
+        `${this.API_URL}/events/${eventId}/submit-for-approval`
+      );
       return this.parseEventDates(response.data);
     } catch (error: any) {
       console.error(

@@ -6,6 +6,7 @@ export interface Seat {
   seatNumber: string;
   rowNumber: string;
   seatInRow: number;
+  status?: "available" | "sold" | "pending";
 }
 
 export interface Section {
@@ -14,6 +15,12 @@ export interface Section {
   name: string;
   capacity: number;
   seats: Seat[];
+  price?: number;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  rotation?: number;
 }
 
 export interface Venue {

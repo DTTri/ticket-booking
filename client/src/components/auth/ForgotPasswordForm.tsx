@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { useForgotPassword } from "@/hooks/useUser";
 
 export default function ForgotPasswordForm({
-  onResetRequest,
+  onResetRequest: _onResetRequest,
 }: {
   onResetRequest: (email: string) => void;
 }) {
@@ -23,8 +23,9 @@ export default function ForgotPasswordForm({
     if (email) {
       try {
         await request(email);
-      } catch (err: any) {
-        console.error("Forgot password request failed: ", err.message || err);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error("Forgot password request failed: ", errorMessage);
       }
     }
   };
@@ -36,7 +37,7 @@ export default function ForgotPasswordForm({
           <h2 className="text-sm font-semibold text-gray-500 mb-2">PASSWORD RECOVERY</h2>
           <h1 className="text-2xl font-bold mb-2">Forgot Password</h1>
           <p className="text-gray-600 text-sm mb-6">
-            Enter your email address and we'll send you a link to reset your password
+            Enter your email address and we&apos;ll send you a link to reset your password
           </p>
 
           <form className="flex flex-col gap-4">
@@ -84,11 +85,11 @@ export default function ForgotPasswordForm({
           </div>
           <h2 className="text-xl font-bold mb-2">Check your inbox</h2>
           <p className="text-gray-600 mb-4">
-            We've sent a password reset link to: <br />
+            We&apos;ve sent a password reset link to: <br />
             <span className="font-semibold">{email}</span>
           </p>
           <p className="text-sm text-gray-500">
-            Didn't receive the email? Check your spam folder or{" "}
+            Didn&apos;t receive the email? Check your spam folder or{" "}
             <button
               onClick={resetState}
               className="text-[#2ECC71] hover:underline cursor-pointer font-semibold"

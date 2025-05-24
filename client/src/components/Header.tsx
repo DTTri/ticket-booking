@@ -19,12 +19,12 @@ export default function Header() {
         <Link href="/" className="text-xl font-medium text-[16px] hover:bg-gray-100 rounded-xl p-2">
           My orders
         </Link>
-        <Button
+        {/* <Button
           variant={"default"}
           className="font-semibold text-[16px] hover:bg-gray-100 border-1 bg-background cursor-pointer rounded-[50px]"
         >
           Login
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

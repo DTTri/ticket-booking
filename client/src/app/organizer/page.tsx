@@ -5,7 +5,7 @@ import LoadingSpinner from "@/components/ui/loading";
 import { useEventList } from "@/hooks/useEvents";
 import { EventStatus } from "@/models/Event";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const customStyles = `
   .hide-scrollbar {
@@ -42,7 +42,7 @@ const customStyles = `
 //   }));
 
 export default function OrganizerPage() {
-  const { events, errorEventList, isLoadingList, loadEvents } = useEventList();
+  const { events, isLoadingList, loadEvents } = useEventList();
 
   useEffect(() => {
     loadEvents();

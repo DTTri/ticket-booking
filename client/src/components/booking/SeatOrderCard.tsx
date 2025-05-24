@@ -23,7 +23,7 @@ export default function SeatOrderCard({
         <div className="w-full flex flex-col">
           <p className="text-[#1D1D1D] text-[16px] font-bold">{seatOrder.SectionId}</p>
           <p className="text-[#686868] text-[14px] font-medium">
-            {seatOrder.SeatInRow} | {seatOrder.SeatNumber}
+            {seatOrder.RowNumber} | {seatOrder.SeatNumber}
           </p>
         </div>
         <div className="w-full flex flex-row items-center justify-between">

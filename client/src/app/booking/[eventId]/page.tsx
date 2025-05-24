@@ -3,40 +3,35 @@ import ConfirmPopup from "@/components/booking/ConfirmPopup";
 import SeatMap from "@/components/booking/SeatMap";
 import SeatOrderCard from "@/components/booking/SeatOrderCard";
 import { Button } from "@/components/ui/button";
-import { sampleEvents } from "@/libs/place-holder.data";
-import Event from "@/models/event/Event";
+import { useEventDetails } from "@/hooks/useEvents";
 import Seat from "@/models/Seat";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const fetchBooking = async (eventId: string) => {
-  // const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
-  // if (!response.ok) {
-  //   throw new Error("Failed to fetch event detail");
-  // }
-  // return response.json();
-  console.log(eventId);
-  return sampleEvents[0]; // Mocked data for now
-};
-
 export default function BookingPage() {
   const { eventId } = useParams();
   const router = useRouter();
-  const [curEvent, setCurEvent] = useState<Event>();
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [isOpenConfirmPopup, setIsOpenConfirmPopup] = useState(false);
 
+  // Use Redux store to get event details
+  const {
+    event: curEvent,
+    isLoadingEventDetails,
+    errorEventDetails,
+    loadEvent,
+    clearDetails,
+  } = useEventDetails();
+
   useEffect(() => {
-    const loadEventDataDetail = async () => {
-      try {
-        const event = await fetchBooking(eventId as string);
-        setCurEvent(event);
-      } catch (error) {
-        console.error("Error fetching event detail:", error);
-      }
+    if (eventId) {
+      loadEvent(eventId as string);
+    }
+
+    return () => {
+      clearDetails();
     };
-    loadEventDataDetail();
-  }, [eventId]);
+  }, [eventId, loadEvent, clearDetails]);
 
   const handleRemoveSeat = (seatId: string) => {
     setSelectedSeats(prevSeats => prevSeats.filter(seat => seat.SeatId !== seatId));
@@ -57,14 +52,49 @@ export default function BookingPage() {
     router.push(`/booking/payment/${eventId}`);
   };
 
+  // Show loading state
+  if (isLoadingEventDetails) {
+    return (
+      <div className="w-full h-[calc(100vh-80px)] flex items-center justify-center">
+        <div className="text-lg">Loading event details...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (errorEventDetails) {
+    return (
+      <div className="w-full h-[calc(100vh-80px)] flex items-center justify-center">
+        <div className="text-lg text-red-500">Error: {errorEventDetails}</div>
+      </div>
+    );
+  }
+
+  // Show not found state
+  if (!curEvent) {
+    return (
+      <div className="w-full h-[calc(100vh-80px)] flex items-center justify-center">
+        <div className="text-lg">Event not found</div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-[calc(100vh-80px)] py-3 px-5 flex flex-row">
       <div className="w-[40%] h-full py-3 px-4 overflow-y-auto">
         <div className="bookingInfo w-full flex flex-col gap-3 border-b-1 border-[#D0D0D0] pb-3 mb-3">
-          <h2 className="text-2xl font-bold text-[#1D1D1D]">{curEvent?.Name}</h2>
+          <h2 className="text-2xl font-bold text-[#1D1D1D]">{curEvent?.name}</h2>
           <div className="flex flex-col">
-            <p className="text-[#686868] text-[12px] font-medium">{curEvent?.StartDateTime}</p>
-            <p className="text-[#686868] text-[12px] font-medium">{curEvent?.EndDateTime}</p>
+            <p className="text-[#686868] text-[12px] font-medium">
+              {curEvent?.startDateTime
+                ? new Date(curEvent.startDateTime).toLocaleString()
+                : "Start time not available"}
+            </p>
+            <p className="text-[#686868] text-[12px] font-medium">
+              {curEvent?.endDateTime
+                ? new Date(curEvent.endDateTime).toLocaleString()
+                : "End time not available"}
+            </p>
           </div>
         </div>
         <div className="w-full flex flex-row justify-between mb-2">

@@ -104,8 +104,8 @@ function VenueMapSVG({ venue, selectedSeats, onSeatSelect }: VenueMapSVGProps) {
       setScale(2);
 
       // Center on the section
-      const newX = dimensions.width / 2 - section.x * scale;
-      const newY = dimensions.height / 2 - section.y * scale;
+      const newX = dimensions.width / 2 - (section.x ?? 0) * scale;
+      const newY = dimensions.height / 2 - (section.y ?? 0) * scale;
 
       setPosition({ x: newX, y: newY });
     }
@@ -216,10 +216,10 @@ function VenueMapSVG({ venue, selectedSeats, onSeatSelect }: VenueMapSVGProps) {
 
           {venue.sections.map(section => (
             <VenueSectionSVG
-              key={section.id}
+              key={section.sectionId}
               section={section}
               detailLevel={detailLevel}
-              isSelected={selectedSection?.id === section.id}
+              isSelected={selectedSection?.sectionId === section.sectionId}
               selectedSeats={selectedSeats}
               onSectionClick={() => handleSectionClick(section)}
               onSeatSelect={onSeatSelect}

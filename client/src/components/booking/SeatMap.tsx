@@ -20,19 +20,17 @@ function SeatMap({ onSeatSelect, selectedSeats: externalSelectedSeats }: SeatMap
   const handleSeatSelect = (seatId: string) => {
     if (onSeatSelect) {
       for (const section of sampleVenue.sections) {
-        for (const row of section.rows) {
-          const seat = row.seats.find(s => s.id === seatId);
-          if (seat) {
-            const appSeat: Seat = {
-              SeatId: seat.id,
-              SectionId: section.id,
-              SeatNumber: seat.number,
-              RowNumber: row.name,
-              SeatInRow: parseInt(seat.number),
-            };
-            onSeatSelect(appSeat);
-            return;
-          }
+        const seat = section.seats.find(s => s.seatId === seatId);
+        if (seat) {
+          const appSeat: Seat = {
+            SeatId: seat.seatId,
+            SectionId: section.sectionId,
+            SeatNumber: seat.seatNumber,
+            RowNumber: seat.rowNumber,
+            SeatInRow: parseInt(seat.seatNumber),
+          };
+          onSeatSelect(appSeat);
+          return;
         }
       }
     } else {

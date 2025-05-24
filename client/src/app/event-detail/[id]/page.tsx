@@ -18,7 +18,7 @@ const fetchEventDetail = async (eventId: string) => {
   //   throw new Error("Failed to fetch event detail");
   // }
   // return response.json();
-  console.log(eventId);
+  console.warn(eventId);
   return sampleEvents[0]; // Mocked data for now
 };
 
@@ -44,7 +44,7 @@ export default function EventDetailPage() {
     loadEventDataDetail();
   }, [id]);
 
-  console.log("Selected Event:", selectedEvent?.Image);
+  console.warn("Selected Event:", selectedEvent?.Image);
 
   useEffect(() => {
     if (selectedEvent) {

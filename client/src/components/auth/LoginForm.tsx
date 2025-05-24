@@ -8,7 +8,7 @@ import { useLogin } from "@/hooks/useUser";
 
 export default function LoginForm({
   onLogin,
-  onForgotPassword,
+  onForgotPassword: _onForgotPassword,
 }: {
   onLogin: () => void;
   onForgotPassword: () => void;
@@ -20,21 +20,27 @@ export default function LoginForm({
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setPassword(e.target.value);
 
-  const { login, isLoading, error, isAuthenticated } = useLogin();
+  const {
+    login: _login,
+    isLoading: _isLoading,
+    error: _error,
+    isAuthenticated: _isAuthenticated,
+  } = useLogin();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const _handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
     try {
       //await login({ name, password });
       // if (isAuthenticated) router.push('/dashboard');
-    } catch (loginError: any) {
-      console.error("Login failed:", loginError.message || loginError);
+    } catch (loginError: unknown) {
+      const errorMessage = loginError instanceof Error ? loginError.message : String(loginError);
+      console.error("Login failed:", errorMessage);
     }
   };
 
   return (
     <div className="w-[400px] p-8 rounded-lg shadow-lg bg-white">
-      <h2 className="text-sm font-semibold text-gray-500 mb-2">LET'S GET YOU STARTED</h2>
+      <h2 className="text-sm font-semibold text-gray-500 mb-2">LET&apos;S GET YOU STARTED</h2>
       <h1 className="text-2xl font-bold mb-6">Create an Account</h1>
 
       <form className="flex flex-col gap-4">

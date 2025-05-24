@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { CreditCard } from "lucide-react";
 import TicketCard from "@/components/booking/TicketCard";
+import Image from "next/image";
 
 const fetchBookingEvent = async (eventId: string) => {
   // const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
@@ -17,7 +18,7 @@ const fetchBookingEvent = async (eventId: string) => {
   //   throw new Error("Failed to fetch event detail");
   // }
   // return response.json();
-  console.log("event id" + eventId);
+  console.warn("event id" + eventId);
   return sampleEvents[0]; // Mocked data for now
 };
 
@@ -80,7 +81,7 @@ export default function PaymentPage() {
 
   const handleTimeEnd = useCallback(
     () => () => {
-      console.log("Time is up!");
+      console.warn("Time is up!");
     },
     []
   );
@@ -312,9 +313,11 @@ export default function PaymentPage() {
       <div className="w-[28%] rounded-lg p-2 flex flex-col gap-3">
         {/* Match Image */}
         <div className="w-full h-[200px] bg-gray-200 rounded-[6px] overflow-hidden">
-          <img
+          <Image
             src={sampleEvents[0].Image} // Replace with actual match image
             alt="Match"
+            width={400}
+            height={200}
             className="w-full h-full object-cover"
           />
         </div>

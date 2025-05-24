@@ -11,9 +11,9 @@ import LoadingSpinner from "@/components/ui/loading";
 
 export default function HomePage() {
   const [startIndex, setStartIndex] = useState(0);
-  const [location, setLocation] = useState("");
-  const [match, setMatch] = useState("");
-  const [date, setDate] = useState("");
+  // const [location, setLocation] = useState("");
+  // const [match, setMatch] = useState("");
+  // const [date, setDate] = useState("");
   const itemsPerPage = 3;
 
   const { events, isLoadingList, loadEvents } = useEventList();
@@ -22,15 +22,16 @@ export default function HomePage() {
     const fetchEvents = async () => {
       try {
         await loadEvents();
+        console.warn(events.length);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
     };
     fetchEvents();
-  }, [loadEvents]);
+  }, [loadEvents, events.length]);
 
-  if(isLoadingList) {
-    <LoadingSpinner />
+  if (isLoadingList) {
+    <LoadingSpinner />;
   }
 
   const handleNext = () => {
@@ -124,7 +125,10 @@ export default function HomePage() {
               }}
             >
               {events.map(event => (
-                <div key={event.eventId} className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4">
+                <div
+                  key={event.eventId}
+                  className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4"
+                >
                   <EventInfo event={event} />
                 </div>
               ))}

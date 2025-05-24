@@ -15,7 +15,7 @@ export default function SignUpForm({ onSignUp }: { onSignUp: () => void }) {
   const [password, setPassword] = useState("");
 
   const { user } = useAuthSession();
-  const { signup, error, isLoading } = useSignup();
+  const { signup, error: _error, isLoading } = useSignup();
 
   const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFirstName(e.target.value);
@@ -98,7 +98,7 @@ export default function SignUpForm({ onSignUp }: { onSignUp: () => void }) {
 
         <div>
           <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-            Your Name
+            Last Name
           </label>
           <TextField
             placeholder="Last Name"

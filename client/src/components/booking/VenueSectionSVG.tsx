@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Section } from "@/models/Venue";
+import { Section, Seat } from "@/models/Venue";
 
 interface VenueSectionSVGProps {
   section: Section;
@@ -27,29 +27,38 @@ function VenueSectionSVG({
   const [rowColors, setRowColors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const totalSeats = section.rows.reduce((total, row) => total + row.seats.length, 0);
-    const unavailableSeats = section.rows.reduce(
-      (total, row) =>
-        total +
-        row.seats.filter(seat => seat.status === "sold" || seat.status === "pending").length,
-      0
-    );
-    const availabilityPercentage = 1 - unavailableSeats / totalSeats;
+    const totalSeats = section.seats.length;
+    const unavailableSeats = section.seats.filter(
+      seat => seat.status === "sold" || seat.status === "pending"
+    ).length;
+    const availabilityPercentage = totalSeats > 0 ? 1 - unavailableSeats / totalSeats : 1;
 
     const colorIntensity = Math.max(0.4, availabilityPercentage);
 
     const adjustedColor = applyIntensity(baseColor, colorIntensity);
     setSectionColor(adjustedColor);
 
+    // Group seats by row and calculate row colors
     const newRowColors: Record<string, string> = {};
-    section.rows.forEach(row => {
-      const totalRowSeats = row.seats.length;
-      const unavailableRowSeats = row.seats.filter(
+    const rowGroups = section.seats.reduce(
+      (groups, seat) => {
+        if (!groups[seat.rowNumber]) {
+          groups[seat.rowNumber] = [];
+        }
+        groups[seat.rowNumber].push(seat);
+        return groups;
+      },
+      {} as Record<string, Seat[]>
+    );
+
+    Object.entries(rowGroups).forEach(([rowNumber, rowSeats]) => {
+      const totalRowSeats = rowSeats.length;
+      const unavailableRowSeats = rowSeats.filter(
         seat => seat.status === "sold" || seat.status === "pending"
       ).length;
-      const rowAvailability = 1 - unavailableRowSeats / totalRowSeats;
+      const rowAvailability = totalRowSeats > 0 ? 1 - unavailableRowSeats / totalRowSeats : 1;
       const rowIntensity = Math.max(0.4, rowAvailability);
-      newRowColors[row.id] = applyIntensity(baseColor, rowIntensity);
+      newRowColors[rowNumber] = applyIntensity(baseColor, rowIntensity);
     });
     setRowColors(newRowColors);
   }, [section]);
@@ -77,8 +86,8 @@ function VenueSectionSVG({
         style={{ cursor: "pointer" }}
       >
         <rect
-          x={-section.width / 2}
-          y={-section.height / 2}
+          x={-(section.width || 40) / 2}
+          y={-(section.height || 40) / 2}
           width={section.width}
           height={section.height}
           fill={sectionColor}
@@ -105,7 +114,7 @@ function VenueSectionSVG({
 
         {/* Price tag - always vertical and at bottom */}
         <g
-          transform={`translate(0, ${section.height / 2 + 10}) ${section.rotation ? `rotate(${-section.rotation})` : ""}`}
+          transform={`translate(0, ${(section.height ?? 40) / 2 + 10}) ${section.rotation ? `rotate(${-section.rotation})` : ""}`}
         >
           <rect
             x={-20 / scale}
@@ -132,17 +141,30 @@ function VenueSectionSVG({
   }
 
   if (detailLevel === "row") {
-    const rowHeight = section.height / section.rows.length;
+    // Group seats by row
+    const rowGroups = section.seats.reduce(
+      (groups, seat) => {
+        if (!groups[seat.rowNumber]) {
+          groups[seat.rowNumber] = [];
+        }
+        groups[seat.rowNumber].push(seat);
+        return groups;
+      },
+      {} as Record<string, Seat[]>
+    );
+
+    const rowNumbers = Object.keys(rowGroups).sort();
+    const rowHeight = (section.height || 100) / rowNumbers.length;
 
     return (
       <g
         transform={`translate(${section.x}, ${section.y}) ${section.rotation ? `rotate(${section.rotation})` : ""}`}
       >
         <rect
-          x={-section.width / 2}
-          y={-section.height / 2}
-          width={section.width}
-          height={section.height}
+          x={-(section.width || 100) / 2}
+          y={-(section.height || 100) / 2}
+          width={section.width || 100}
+          height={section.height || 100}
           fill={sectionColor}
           opacity={0.3}
           stroke="#000"
@@ -151,17 +173,16 @@ function VenueSectionSVG({
           ry={2}
         />
 
-        {section.rows.map((row, rowIndex) => {
-          const yOffset = -section.height / 2 + rowIndex * rowHeight;
-
-          const rowColor = rowColors[row.id] || sectionColor;
+        {rowNumbers.map((rowNumber, rowIndex) => {
+          const yOffset = -(section.height || 100) / 2 + rowIndex * rowHeight;
+          const rowColor = rowColors[rowNumber] || sectionColor;
 
           return (
-            <g key={row.id} onClick={onSectionClick} style={{ cursor: "pointer" }}>
+            <g key={rowNumber} onClick={onSectionClick} style={{ cursor: "pointer" }}>
               <rect
-                x={-section.width / 2}
+                x={-(section.width || 100) / 2}
                 y={yOffset}
-                width={section.width}
+                width={section.width || 100}
                 height={rowHeight}
                 fill={rowColor}
                 opacity={opacity}
@@ -176,19 +197,20 @@ function VenueSectionSVG({
                 fontSize={12 / scale}
                 fill="#fff"
               >
-                Row {row.name}
+                Row {rowNumber}
               </text>
             </g>
           );
         })}
-        {/* section title */}
+
+        {/* Section title - always vertical */}
         <g transform={`${section.rotation ? `rotate(${-section.rotation})` : ""}`}>
           <text
             x={0}
-            y={0}
+            y={-(section.height || 100) / 2 - 10}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontSize={18 / scale}
+            fontSize={14 / scale}
             fontWeight="bold"
             fill="#000"
           >
@@ -196,9 +218,9 @@ function VenueSectionSVG({
           </text>
         </g>
 
-        {/* price tag*/}
+        {/* Price tag - always vertical and at bottom */}
         <g
-          transform={`translate(0, ${section.height / 2 + 15}) ${section.rotation ? `rotate(${-section.rotation})` : ""}`}
+          transform={`translate(0, ${(section.height || 100) / 2 + 15}) ${section.rotation ? `rotate(${-section.rotation})` : ""}`}
         >
           <rect
             x={-20 / scale}
@@ -225,17 +247,30 @@ function VenueSectionSVG({
   }
 
   if (detailLevel === "seat") {
-    const rowHeight = section.height / section.rows.length;
+    // Group seats by row
+    const rowGroups = section.seats.reduce(
+      (groups, seat) => {
+        if (!groups[seat.rowNumber]) {
+          groups[seat.rowNumber] = [];
+        }
+        groups[seat.rowNumber].push(seat);
+        return groups;
+      },
+      {} as Record<string, Seat[]>
+    );
+
+    const rowNumbers = Object.keys(rowGroups).sort();
+    const rowHeight = (section.height || 100) / rowNumbers.length;
 
     return (
       <g
         transform={`translate(${section.x}, ${section.y}) ${section.rotation ? `rotate(${section.rotation})` : ""}`}
       >
         <rect
-          x={-section.width / 2}
-          y={-section.height / 2}
-          width={section.width}
-          height={section.height}
+          x={-(section.width || 100) / 2}
+          y={-(section.height || 100) / 2}
+          width={section.width || 100}
+          height={section.height || 100}
           fill={sectionColor}
           opacity={0.3}
           stroke="#000"
@@ -244,14 +279,14 @@ function VenueSectionSVG({
           ry={2}
         />
 
-        {/* section title */}
+        {/* Section title - always vertical */}
         <g transform={`${section.rotation ? `rotate(${-section.rotation})` : ""}`}>
           <text
             x={0}
-            y={0}
+            y={-(section.height || 100) / 2 - 10}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontSize={18 / scale}
+            fontSize={16 / scale}
             fontWeight="bold"
             fill="#000"
           >
@@ -259,9 +294,9 @@ function VenueSectionSVG({
           </text>
         </g>
 
-        {/* price tag*/}
+        {/* Price tag - always vertical and at bottom */}
         <g
-          transform={`translate(0, ${section.height / 2 + 15}) ${section.rotation ? `rotate(${-section.rotation})` : ""}`}
+          transform={`translate(0, ${(section.height || 100) / 2 + 15}) ${section.rotation ? `rotate(${-section.rotation})` : ""}`}
         >
           <rect
             x={-20 / scale}
@@ -285,30 +320,30 @@ function VenueSectionSVG({
         </g>
 
         {/* Rows and seats */}
-        {section.rows.map((row, rowIndex) => {
-          const yOffset = -section.height / 2 + rowIndex * rowHeight;
-          const seatWidth = section.width / row.seats.length;
+        {rowNumbers.map((rowNumber, rowIndex) => {
+          const yOffset = -(section.height || 100) / 2 + rowIndex * rowHeight;
+          const rowSeats = rowGroups[rowNumber].sort((a, b) => a.seatInRow - b.seatInRow);
+          const seatWidth = (section.width || 100) / rowSeats.length;
           const seatSize = Math.min(seatWidth * 0.8, rowHeight * 0.8);
           const seatRadius = seatSize / 2;
 
           return (
-            <g key={row.id}>
+            <g key={rowNumber}>
               {/* Row label */}
               <text
-                rotate={`${section.rotation ? `${-section.rotation}` : ""}`}
-                x={-section.width / 2 - 5}
+                x={-(section.width || 100) / 2 - 10}
                 y={yOffset + rowHeight / 2}
-                textAnchor="start"
+                textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize={14 / scale}
+                fontSize={12 / scale}
                 fontWeight="bold"
                 fill="#000"
               >
-                {row.name}
+                {rowNumber}
               </text>
 
-              {/* seats */}
-              {row.seats.map((seat, seatIndex) => {
+              {/* Seats */}
+              {rowSeats.map((seat, seatIndex) => {
                 let seatColor = "#ccc";
 
                 if (seat.status === "available") {
@@ -319,26 +354,27 @@ function VenueSectionSVG({
                   seatColor = "#FFC107";
                 }
 
-                const isSelected = selectedSeats.includes(seat.id);
+                const isSelected = selectedSeats.includes(seat.seatId);
                 if (isSelected) {
                   seatColor = "#2196F3";
                 }
 
-                const xOffset = -section.width / 2 + seatIndex * seatWidth + seatWidth / 2;
+                const xOffset = -(section.width || 100) / 2 + seatIndex * seatWidth + seatWidth / 2;
 
                 return (
                   <g
-                    key={seat.id}
+                    key={seat.seatId}
                     transform={`translate(${xOffset}, ${yOffset + rowHeight / 2})`}
                     onClick={() => {
                       if (seat.status === "available" || isSelected) {
-                        onSeatSelect(seat.id);
+                        onSeatSelect(seat.seatId);
                       }
                     }}
                     style={{
                       cursor: seat.status === "available" || isSelected ? "pointer" : "not-allowed",
                     }}
                   >
+                    {/* Seat circle */}
                     <circle
                       r={seatRadius}
                       fill={seatColor}
@@ -347,15 +383,15 @@ function VenueSectionSVG({
                       opacity={seat.status === "sold" ? 0.7 : 1}
                     />
 
+                    {/* Seat number */}
                     <text
-                      transform={`${section.rotation ? `rotate(${-section.rotation})` : ""}`}
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fontSize={10 / scale}
                       fontWeight="bold"
                       fill={isSelected || seat.status === "available" ? "#fff" : "#000"}
                     >
-                      {seat.number}
+                      {seat.seatNumber}
                     </text>
                   </g>
                 );
