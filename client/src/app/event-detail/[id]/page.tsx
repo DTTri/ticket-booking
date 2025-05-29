@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 import { sampleEvents } from "@/libs/place-holder.data";
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
-import Event from "@/models/event/Event";
+import Event from "@/models/Event";
 import { Clock, MapPinned } from "lucide-react";
 
 type InfoSelect = "details" | "about" | "tickets";
@@ -44,12 +44,12 @@ export default function EventDetailPage() {
     loadEventDataDetail();
   }, [id]);
 
-  console.warn("Selected Event:", selectedEvent?.Image);
+  console.warn("Selected Event:", selectedEvent?.poster);
 
   useEffect(() => {
     if (selectedEvent) {
-      const startDate = new Date(selectedEvent.StartDateTime);
-      const endDate = new Date(selectedEvent.EndDateTime);
+      const startDate = new Date(selectedEvent.startDateTime);
+      const endDate = new Date(selectedEvent.endDateTime);
 
       const formattedDate = startDate.toLocaleDateString("en-US", {
         weekday: "long",
@@ -91,7 +91,7 @@ export default function EventDetailPage() {
       <div className="w-full h-full flex flex-row">
         <div className="w-[38%] h-full overflow-hidden">
           <Image
-            src={selectedEvent?.Image || ""}
+            src={selectedEvent?.poster || ""}
             width={500}
             height={500}
             alt="Event"
@@ -105,8 +105,8 @@ export default function EventDetailPage() {
           <div className="w-full h-[95%]">
             {infoSelect === "about" && selectedEvent && (
               <div className="w-full max-w-[800px] mx-auto px-4 py-6">
-                <h1 className="text-3xl font-bold text-black mb-1">{selectedEvent.Name}</h1>
-                <p className="text-gray-500 text-sm mb-4">{selectedEvent.Status}</p>
+                <h1 className="text-3xl font-bold text-black mb-1">{selectedEvent.name}</h1>
+                <p className="text-gray-500 text-sm mb-4">{selectedEvent.status}</p>
 
                 <div className="flex items-center gap-3 mb-4">
                   <MapPinned className="text-black" />
@@ -143,21 +143,9 @@ export default function EventDetailPage() {
             )}
             {infoSelect === "details" && selectedEvent && (
               <div className="w-full max-w-[800px] mx-auto px-4 py-6">
-                <h1 className="text-3xl font-bold text-black mb-1">{selectedEvent.Name}</h1>
-                <p className="text-gray-500 text-sm mb-4">{selectedEvent.Status}</p>
-
-                <p className="text-gray-700 text-sm leading-6">
-                  {selectedEvent.Description}
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada ipsum sit
-                  amet nulla feugiat, vitae accumsan neque tincidunt. Morbi sit amet dapibus nisi.
-                  Nulla scelerisque, dolor eget cursus lobortis, dui massa ultricies dui, non
-                  blandit nibh ipsum ac diam. Aenean non ultricies urna, at sagittis ipsum. Morbi
-                  mattis sit amet ex ut bibendum. Sed viverra tortor metus, ac mattis ante efficitur
-                  eu. Sed semper faucibus justo, vel congue tortor sodales eget. Phasellus elementum
-                  est et pharetra elementum. Aliquam euismod, eros sit amet vulputate eleifend,
-                  turpis nibh semper velit, vel suscipit ligula metus id nisl. Duis rhoncus orci
-                  eget nisl accumsan, sed eleifend est egestas.
-                </p>
+                <h1 className="text-3xl font-bold text-black mb-1">{selectedEvent.name}</h1>
+                <p className="text-gray-500 text-sm mb-4">{selectedEvent.status}</p>
+                <p className="text-gray-700 text-sm leading-6">{selectedEvent.description}</p>
               </div>
             )}
             {infoSelect === "tickets" && (

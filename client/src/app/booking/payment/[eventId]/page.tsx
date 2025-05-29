@@ -2,7 +2,7 @@
 import TimeCount from "@/components/booking/TimeCount";
 import TimeInfoConfirmPopup from "@/components/booking/TimeInfoConfirmPopup";
 import { sampleEvents } from "@/libs/place-holder.data";
-import Event from "@/models/event/Event";
+import Event from "@/models/Event";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { TextField } from "@/components/ui/textinput";
@@ -314,7 +314,7 @@ export default function PaymentPage() {
         {/* Match Image */}
         <div className="w-full h-[200px] bg-gray-200 rounded-[6px] overflow-hidden">
           <Image
-            src={sampleEvents[0].Image} // Replace with actual match image
+            src={sampleEvents[0].poster} // Replace with actual match image
             alt="Match"
             width={400}
             height={200}
@@ -326,7 +326,7 @@ export default function PaymentPage() {
         <div className="flex flex-col gap-2">
           <div className="w-full flex flex-row justify-between items-center gap-1">
             <p className="text-sm text-gray-500">Match</p>
-            <p className="text-lg font-bold">{curEvent?.Name}</p>
+            <p className="text-lg font-bold">{curEvent?.name}</p>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Seats</p>
@@ -334,11 +334,11 @@ export default function PaymentPage() {
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Location</p>
-            <p className="text-base font-semibold">{curEvent?.VenueId}</p>
+            <p className="text-base font-semibold">{curEvent?.venueId}</p>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Time</p>
-            <p className="text-base font-semibold">{curEvent?.StartDateTime}</p>
+            <p className="text-base font-semibold">{curEvent?.startDateTime.toLocaleString()}</p>
           </div>
         </div>
 

@@ -89,7 +89,7 @@ export default function OrderDetailsPage() {
         {/* Match Image */}
         <div className="w-full h-[200px] bg-gray-200 rounded-[6px] overflow-hidden">
           <Image
-            src={sampleEvents[0].Image} // Replace with actual match image
+            src={sampleEvents[0].poster}
             alt="Match"
             width={400}
             height={200}

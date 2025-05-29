@@ -90,11 +90,11 @@ const userSlice = createSlice({
         state.isAuthenticated = true;
         state.error = null;
       })
-      .addCase(loginUser.rejected, (state, action: PayloadAction<string | undefined>) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
-        state.error = action.payload || "Login failed";
+        state.error = (action.payload as string) || "Login failed";
       })
       .addCase(signupUser.pending, state => {
         state.isLoading = true;
@@ -105,9 +105,9 @@ const userSlice = createSlice({
         state.error = null; // Clear any previous errors
         state.user = action.payload;
       })
-      .addCase(signupUser.rejected, (state, action: PayloadAction<string | undefined>) => {
+      .addCase(signupUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload || "Signup failed";
+        state.error = (action.payload as string) || "Signup failed";
       })
       // Handle forgot password thunk
       .addCase(requestPasswordReset.pending, state => {
@@ -118,13 +118,10 @@ const userSlice = createSlice({
         state.forgotPasswordStatus = "succeeded";
         state.forgotPasswordError = null;
       })
-      .addCase(
-        requestPasswordReset.rejected,
-        (state, action: PayloadAction<string | undefined>) => {
-          state.forgotPasswordStatus = "failed";
-          state.forgotPasswordError = action.payload || "Failed to send reset link";
-        }
-      );
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.forgotPasswordStatus = "failed";
+        state.forgotPasswordError = (action.payload as string) || "Failed to send reset link";
+      });
   },
 });
 
