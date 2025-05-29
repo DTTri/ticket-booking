@@ -1,6 +1,8 @@
+import { UserRole } from "@/constants";
+
 export type UserSignupDTO = {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-}
+  email: string;
+  password: string;
+  username: string;
+  role: UserRole;
+};

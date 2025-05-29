@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
 // Define backend API base URL
 
 class AuthService {
-  API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8083/api'; // Replace with your actual backend URL
-  
+  API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8082/api"; // Replace with your actual backend URL
+
   async login(credentials: any) {
     try {
       const response = await axios.post(`${this.API_URL}/auth/login`, credentials);
@@ -17,7 +17,7 @@ class AuthService {
 
   async signup(userData: any) {
     try {
-      const response = await axios.post(`${this.API_URL}/auth/signup`, userData);
+      const response = await axios.post(`${this.API_URL}/auth/register`, userData);
       return response.data;
     } catch (error: any) {
       console.log("Fetch user error: " + error.response?.data?.message || error.message);

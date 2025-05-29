@@ -6,17 +6,11 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { useLogin } from "@/hooks/useUser";
 
-export default function LoginForm({
-  onLogin,
-  onForgotPassword: _onForgotPassword,
-}: {
-  onLogin: () => void;
-  onForgotPassword: () => void;
-}) {
-  const [name, setName] = useState("");
+export default function LoginForm({ onLogin }: { onLogin: () => void }) {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setPassword(e.target.value);
 
@@ -28,32 +22,27 @@ export default function LoginForm({
   } = useLogin();
 
   const _handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent default form submission
-    try {
-      //await login({ name, password });
-      // if (isAuthenticated) router.push('/dashboard');
-    } catch (loginError: unknown) {
-      const errorMessage = loginError instanceof Error ? loginError.message : String(loginError);
-      console.error("Login failed:", errorMessage);
-    }
+    e.preventDefault();
+    _login({ email, password });
+    onLogin();
   };
 
   return (
     <div className="w-[400px] p-8 rounded-lg shadow-lg bg-white">
       <h2 className="text-sm font-semibold text-gray-500 mb-2">LET&apos;S GET YOU STARTED</h2>
-      <h1 className="text-2xl font-bold mb-6">Create an Account</h1>
+      <h1 className="text-2xl font-bold mb-6">Login</h1>
 
       <form className="flex flex-col gap-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-            Your Name
+            Email
           </label>
           <TextField
             placeholder="Name"
             id="name"
             className="mt-1"
-            value={name}
-            onChange={handleNameChange}
+            value={email}
+            onChange={handleEmailChange}
           />
         </div>
 
@@ -71,8 +60,8 @@ export default function LoginForm({
           />
         </div>
 
-        <Button type="submit" onClick={onLogin}>
-          CONTINUE
+        <Button type="submit" onClick={_handleSubmit}>
+          LOGIN
         </Button>
       </form>
 

@@ -44,7 +44,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
+      setCurrentIndex(prevIndex => (prevIndex + 1) % backgroundImages.length);
     }, 4000);
 
     return () => clearInterval(interval);
@@ -52,7 +52,7 @@ export default function SignupPage() {
 
   return (
     <div className="w-full h-screen flex relative">
-     <div className="absolute inset-0 w-full h-full">
+      <div className="absolute inset-0 w-full h-full">
         {backgroundImages.map((image, index) => (
           <div
             key={index}
@@ -71,7 +71,14 @@ export default function SignupPage() {
 
       <div className="relative w-[50%] h-full z-10 px-14 py-10">
         <div className="w-full h-full flex flex-col items-start justify-center ml-12 mb-8 text-white">
-          <Image style={{ animation: "fade-in 1s forwards" }} src={logo_app} alt="Logo" width={200} height={200} className="mb-2 transition-opacity duration-1000 ease-in-out opacity-0" />
+          <Image
+            style={{ animation: "fade-in 1s forwards" }}
+            src={logo_app}
+            alt="Logo"
+            width={200}
+            height={200}
+            className="mb-2 transition-opacity duration-1000 ease-in-out opacity-0"
+          />
           <p
             key={currentIndex} // Key ensures re-render for animation
             className="text-[40px] font-bold text-[#fff] transition-opacity duration-1000 ease-in-out opacity-0"
@@ -99,26 +106,25 @@ export default function SignupPage() {
         </div>
       </div>
 
-      <div style={{ animation: "fade-in 1s forwards" }} className="relative w-[50%] h-full flex justify-center items-center z-10 pb-4 transition-opacity duration-1000 ease-in-out opacity-0">
+      <div
+        style={{ animation: "fade-in 1s forwards" }}
+        className="relative w-[50%] h-full flex justify-center items-center z-10 pb-4 transition-opacity duration-1000 ease-in-out opacity-0"
+      >
         {slug === "signup" && (
           <SignUpForm
             onSignUp={() => {
               router.push("/auth/login");
-            }} />
+            }}
+          />
         )}
         {slug === "login" && (
           <LoginForm
-            onLogin={() => {}}
-            onForgotPassword={() => {}}
+            onLogin={() => {
+              router.push("/");
+            }}
           />
         )}
-        {
-          slug === "forgot-password" && (
-            <ForgotPasswordForm
-              onResetRequest={() => {}}
-            />
-          )
-        }
+        {slug === "forgot-password" && <ForgotPasswordForm onResetRequest={() => {}} />}
       </div>
     </div>
   );

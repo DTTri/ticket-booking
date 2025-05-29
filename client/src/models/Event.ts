@@ -22,12 +22,12 @@ export type EventSectionPricing = {
   eventId: string;
   sectionId: string;
   price: number;
-}
+};
 
-export enum EventCategory{
-    CONCERT = "CONCERT",
-    MATCH = "MATCH",
-    OTHERS = "OTHERS"
+export enum EventCategory {
+  CONCERT = "CONCERT",
+  MATCH = "MATCH",
+  OTHERS = "OTHERS",
 }
 
 export enum EventStatus {
@@ -37,7 +37,7 @@ export enum EventStatus {
   POSTPONED = "Postponed",
   RESCHEDULED = "Rescheduled",
   CANCELED = "Canceled",
-  REJECTED = "Rejected"
+  REJECTED = "Rejected",
 }
 
 export default Event;

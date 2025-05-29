@@ -7,37 +7,32 @@ import { Button } from "../ui/button";
 import { useAuthSession, useSignup } from "@/hooks/useUser";
 import { UserSignupDTO } from "@/models/DTO/UserDTO";
 import LoadingSpinner from "../ui/loading";
+import { UserRole } from "@/constants";
 
 export default function SignUpForm({ onSignUp }: { onSignUp: () => void }) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [role, setRole] = useState<UserRole>(UserRole.USER);
   const { user } = useAuthSession();
   const { signup, error: _error, isLoading } = useSignup();
 
-  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFirstName(e.target.value);
-  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setLastName(e.target.value);
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setUsername(e.target.value);
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setPassword(e.target.value);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const signupData: UserSignupDTO = {
-        email,
-        password,
-        firstName,
-        lastName,
-      };
-      await signup(signupData);
-    } catch (signupError: any) {
-      console.error("Signup failed: ", signupError.message || signupError);
-    }
+    const signupData: UserSignupDTO = {
+      email,
+      password,
+      username,
+      role,
+    };
+    signup(signupData);
   };
 
   useEffect(() => {
@@ -52,7 +47,7 @@ export default function SignUpForm({ onSignUp }: { onSignUp: () => void }) {
 
   return (
     <div className="w-[400px] p-8 rounded-lg shadow-lg bg-white">
-      <h2 className="text-sm font-semibold text-gray-500 mb-2">LET'S GET YOU STARTED</h2>
+      <h2 className="text-sm font-semibold text-gray-500 mb-2">LETS GET YOU STARTED</h2>
       <h1 className="text-2xl font-bold mb-6">Create an Account</h1>
 
       <form className="flex flex-col gap-4">
@@ -84,29 +79,31 @@ export default function SignUpForm({ onSignUp }: { onSignUp: () => void }) {
         </div>
 
         <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-            First Name
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            Username
           </label>
           <TextField
-            placeholder="First name"
-            id="firstName"
+            placeholder="Username"
+            id="username"
             className="mt-1"
-            value={firstName}
-            onChange={handleFirstNameChange}
+            value={username}
+            onChange={handleUsernameChange}
           />
         </div>
 
         <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-            Last Name
+          <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+            Role
           </label>
-          <TextField
-            placeholder="Last Name"
-            id="lastName"
-            className="mt-1"
-            value={lastName}
-            onChange={handleLastNameChange}
-          />
+          <select
+            id="role"
+            className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+            value={role}
+            onChange={e => setRole(Number(e.target.value) as UserRole)}
+          >
+            <option value={UserRole.USER}>User</option>
+            <option value={UserRole.ORGANIZER}>Organizer</option>
+          </select>
         </div>
 
         <Button onClick={handleSubmit} type="submit" disabled={isLoading}>

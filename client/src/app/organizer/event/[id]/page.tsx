@@ -19,16 +19,15 @@ import {
   UpdateEventDTO,
 } from "@/models/DTO/EventDTO";
 import { useAuthSession } from "@/hooks/useUser";
-import { sampleVenue } from "@/components/booking/venue-data";
 
 const categories = [
-  { value: "match", label: "Match" },
-  { value: "concert", label: "Concert" },
-  { value: "others", label: "Others" },
+  { value: "MATCH", label: "Match" },
+  { value: "CONCERT", label: "Concert" },
+  { value: "OTHERS", label: "Others" },
 ];
 
 const statusOptions = {
-  Draft: ["Submit for Approval"],
+  Draft: ["Submit for approval"],
   "Submit for approval": ["Published"], // Admin transitions this to "Published"
   Published: ["Cancelled", "Postponed"],
   Postponed: ["Cancelled"],
@@ -63,7 +62,7 @@ export default function EventPage() {
     clearDetails: clearEventDetailsStore,
   } = useEventDetails();
   const { isLoadingDetails: isLoadingVenueDetails } = useVenueDetails();
-  const { venues, isLoadingList: isLoadingVenuesList } = useVenueList();
+  const { venues, isLoadingList: isLoadingVenuesList, loadVenues } = useVenueList();
 
   const [eventName, setEventName] = useState("");
   const [category, setCategory] = useState<EventCategory | null>(null);
@@ -90,6 +89,7 @@ export default function EventPage() {
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    loadVenues();
     if (isEditMode && eventId) {
       loadEvent(eventId);
     } else {
@@ -108,7 +108,7 @@ export default function EventPage() {
       setPrices([]);
       setOriginalEventData({ startDateTime: "", endDateTime: "" });
     }
-  }, [loadEvent, eventId, isEditMode, clearEventDetailsStore]);
+  }, [loadEvent, eventId, isEditMode, clearEventDetailsStore, loadVenues]);
 
   useEffect(() => {
     if (event && isEditMode) {
@@ -133,19 +133,14 @@ export default function EventPage() {
       setDetails(event.details);
       setStatus(event.status);
       setPrices(event.sectionPricing);
-
-      setSelectedVenue(sampleVenue);
-      // if (event.eventId) {
-      //   loadVenueData(event.venueId);
-      // }
     }
   }, [event, isEditMode]);
 
-  // useEffect(() => {
-  //   if (venue) {
-  //     setSelectedVenue(venue);
-  //   }
-  // }, [venue]);
+  useEffect(() => {
+    if (event && isEditMode) {
+      setSelectedVenue(venues.find(v => v.venueId === event.venueId) || null);
+    }
+  }, [venues, event, isEditMode]);
 
   if (isLoadingEventDetails || isLoadingVenueDetails || isLoadingVenuesList) {
     return <LoadingSpinner />;
@@ -157,7 +152,7 @@ export default function EventPage() {
       const reader = new FileReader();
       reader.onload = event => {
         if (event.target?.result) {
-          setPosterImage(event.target.result as string);
+          setPosterImage("");
         }
       };
       reader.readAsDataURL(file);
@@ -170,7 +165,7 @@ export default function EventPage() {
       const reader = new FileReader();
       reader.onload = event => {
         if (event.target?.result) {
-          setGalleryImages([...galleryImages, event.target.result as string]);
+          setGalleryImages([...galleryImages, ""]);
         }
       };
       reader.readAsDataURL(file);
@@ -277,10 +272,6 @@ export default function EventPage() {
       alert("Please fill in all required fields, including category and selecting a venue.");
       return;
     }
-    if (!user?.userId && !isEditMode) {
-      alert("User not authenticated. Cannot create event.");
-      return;
-    }
 
     const combinedStartDateTime = new Date(`${eventDateForm}T${startTimeForm}:00Z`).toISOString();
     const combinedEndDateTime = new Date(`${eventDateForm}T${endTimeForm}:00Z`).toISOString();
@@ -312,7 +303,7 @@ export default function EventPage() {
         try {
           await updateExistingEvent(eventId, eventData);
           alert("Event updated successfully!");
-          router.push("/organizer/event");
+          router.push("/organizer");
         } catch (err: unknown) {
           console.error("Failed to update event:", err);
         }
@@ -335,9 +326,9 @@ export default function EventPage() {
         sectionPricing: sectionPricing,
       };
       try {
-        const newEvent = await createNewEvent(eventData);
+        await createNewEvent(eventData);
         alert("Event created successfully!");
-        router.push(`/organizer/event/${newEvent.eventId}`); // Navigate to the new event's page
+        router.push(`/organizer`); // Navigate to the new event's page
       } catch (err: unknown) {
         console.error("Failed to create event:", err);
       }
@@ -478,21 +469,7 @@ export default function EventPage() {
             <Dropdown
               options={categories}
               value={category || ""}
-              onChange={e => {
-                switch (e) {
-                  case "match":
-                    setCategory(EventCategory.MATCH);
-                    break;
-                  case "concert":
-                    setCategory(EventCategory.CONCERT);
-                    break;
-                  case "others":
-                    setCategory(EventCategory.OTHERS);
-                    break;
-                  default:
-                    setCategory(null);
-                }
-              }}
+              onChange={e => setCategory(e as EventCategory)}
               placeholder="Select category"
             />
           </div>
@@ -649,18 +626,17 @@ export default function EventPage() {
 
         {/* Venue */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {!isEditMode && (
-            <div>
-              <label className="block text-sm font-medium mb-1">Select Venue</label>
-              <Dropdown
-                options={venues.map(v => ({ label: v.name, value: v.venueId }))}
-                value={selectedVenue?.venueId || ""}
-                onChange={venueId =>
-                  setSelectedVenue(venues.find(v => v.venueId === venueId) || null)
-                }
-              />
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-medium mb-1">Select Venue</label>
+            <Dropdown
+              options={venues.map(v => ({ label: v.name, value: v.venueId }))}
+              value={selectedVenue?.venueId || ""}
+              onChange={venueId => {
+                setSelectedVenue(venues.find(v => v.venueId === venueId) || null);
+              }}
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">Venue name</label>
             <input
@@ -746,11 +722,6 @@ export default function EventPage() {
         <div>
           <div className="flex justify-between items-center mb-2">
             <label className="block text-sm font-medium">Price</label>
-            {/* {isPricingDisabled && (
-              <span className="text-xs text-amber-600">
-                Pricing cannot be changed when event is not in Draft status.
-              </span>
-            )} */}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Stadium Map */}
@@ -763,7 +734,6 @@ export default function EventPage() {
                 className="w-full h-auto object-contain"
               />
             </div>
-
             {/* Price Table */}
             <div className="border border-gray-300 rounded-md overflow-hidden">
               <div className="flex justify-around bg-primary p-3 font-medium">
@@ -771,33 +741,31 @@ export default function EventPage() {
                 <div>Price ($)</div>
               </div>
               <div className="max-h-64 overflow-y-auto">
-                {!eventId &&
-                  selectedVenue?.sections.map((section, index) => (
-                    <div key={index} className="grid grid-cols-2 p-3 border-t border-gray-200">
-                      <p className="text-center">{section.sectionId}</p>
-                      <div>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={sectionPricing[index]?.price || ""}
-                          onChange={e => {
-                            const newSectionPricing = [...sectionPricing];
-                            newSectionPricing[index] = {
-                              sectionId: section.sectionId,
-                              price: parseFloat(e.target.value),
-                            };
-                            setSectionPricing(newSectionPricing);
-                          }}
-                          className={`w-full h-8 px-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary ${isPricingDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
-                          disabled={isPricingDisabled}
-                        />
-                      </div>
+                {selectedVenue?.sections.map((section, index) => (
+                  <div key={index} className="grid grid-cols-2 p-3 border-t border-gray-200">
+                    <p className="text-center">{section.name}</p>
+                    <div>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={sectionPricing[index]?.price || ""}
+                        onChange={e => {
+                          const newSectionPricing = [...sectionPricing];
+                          newSectionPricing[index] = {
+                            sectionId: section.sectionId,
+                            price: parseFloat(e.target.value),
+                          };
+                          setSectionPricing(newSectionPricing);
+                        }}
+                        className={`w-full h-8 px-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary ${isPricingDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                        disabled={isPricingDisabled}
+                      />
                     </div>
-                  ))}
-                {eventId &&
-                  !prices.length &&
-                  prices.map((item, index) => (
+                  </div>
+                ))}
+                {!eventId &&
+                  selectedVenue?.sections.map((item, index) => (
                     <div key={index} className="grid grid-cols-2 p-3 border-t border-gray-200">
                       <p className="text-center">{item.sectionId}</p>
                       <div>
