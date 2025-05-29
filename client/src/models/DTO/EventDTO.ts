@@ -33,8 +33,7 @@ export type RescheduleEventDTO = {
   newEndDateTime: string;
 };
 
-
 export type SectionPricingDTO = {
-    sectionId: string;
-    price: number;
+  sectionId: string;
+  price: number;
 };

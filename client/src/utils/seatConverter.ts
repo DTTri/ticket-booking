@@ -31,7 +31,10 @@ export function convertLegacySeatToVenueSeat(legacySeat: LegacySeat): VenueSeat 
 /**
  * Convert array of venue seats to legacy seats
  */
-export function convertVenueSeatsToLegacySeats(venueSeats: VenueSeat[], sectionId: string): LegacySeat[] {
+export function convertVenueSeatsToLegacySeats(
+  venueSeats: VenueSeat[],
+  sectionId: string
+): LegacySeat[] {
   return venueSeats.map(seat => convertVenueSeatToLegacySeat(seat, sectionId));
 }
 

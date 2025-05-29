@@ -6,7 +6,7 @@ export const selectCurrentVenue = (state: RootState) => state.venues.currentVenu
 
 export const selectCurrentVenueSections = createSelector(
   [selectCurrentVenue],
-  (currentVenue) => currentVenue?.sections || []
+  currentVenue => currentVenue?.sections || []
 );
 
 export const selectIsLoadingVenuesList = (state: RootState) => state.venues.isLoadingList;

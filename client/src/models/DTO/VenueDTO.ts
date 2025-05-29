@@ -1,4 +1,3 @@
-
 // Venue DTOs
 export interface CreateVenueDTO {
   name: string;

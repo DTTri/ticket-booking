@@ -36,7 +36,7 @@ const bookingSlice = createSlice({
     toggleSeat: (state, action: PayloadAction<{ seat: Seat; price: number }>) => {
       const { seat, price } = action.payload;
       const existingSeatIndex = state.selectedSeats.findIndex(s => s.seatId === seat.seatId);
-      
+
       if (existingSeatIndex !== -1) {
         // Remove seat
         state.selectedSeats.splice(existingSeatIndex, 1);
@@ -47,11 +47,11 @@ const bookingSlice = createSlice({
         state.totalPrice += price;
       }
     },
-    clearSelectedSeats: (state) => {
+    clearSelectedSeats: state => {
       state.selectedSeats = [];
       state.totalPrice = 0;
     },
-    clearBooking: (state) => {
+    clearBooking: state => {
       state.selectedSeats = [];
       state.eventId = null;
       state.totalPrice = 0;
@@ -59,13 +59,7 @@ const bookingSlice = createSlice({
   },
 });
 
-export const {
-  setEventId,
-  addSeat,
-  removeSeat,
-  toggleSeat,
-  clearSelectedSeats,
-  clearBooking,
-} = bookingSlice.actions;
+export const { setEventId, addSeat, removeSeat, toggleSeat, clearSelectedSeats, clearBooking } =
+  bookingSlice.actions;
 
 export default bookingSlice.reducer;
