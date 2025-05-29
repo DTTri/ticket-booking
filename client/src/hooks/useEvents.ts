@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { AppDispatch, RootState } from "../store/store";
 import {
   fetchAllEvents,
   fetchEventById,
@@ -133,7 +132,6 @@ export const useEventMutations = () => {
     },
     [dispatch]
   );
-
 
   const submitExistingEvent = useCallback(
     (eventId: string) => {

@@ -24,6 +24,7 @@ export type EventSectionPricing = {
   price: number;
 };
 
+/* eslint-disable no-unused-vars */
 export enum EventCategory {
   CONCERT = "CONCERT",
   MATCH = "MATCH",

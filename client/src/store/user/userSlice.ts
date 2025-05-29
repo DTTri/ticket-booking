@@ -2,6 +2,7 @@ import { UserSignupDTO } from "@/models/DTO/UserDTO";
 import { LoginCredentials, User } from "@/models/User";
 import authService from "@/services/userService";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ErrorHandler } from "@/utils/errorHandler";
 
 interface UserState {
   user: User | null;
@@ -27,9 +28,8 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await authService.login(credentials);
       return response;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
-      return rejectWithValue(errorMessage);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -41,11 +41,10 @@ export const signupUser = createAsyncThunk(
       const data = await authService.signup(userData);
       // TODO: Handle the response as needed
       return data as User;
-    } catch (error: any) {
+    } catch (error) {
       //The error handling is done in the slice
       //error will be passed to the ActionPayload
-      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
-      return rejectWithValue(errorMessage);
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -56,9 +55,8 @@ export const requestPasswordReset = createAsyncThunk(
     try {
       const data = await authService.forgotPassword(email);
       return data;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
-      return rejectWithValue(errorMessage);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -67,14 +65,14 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    logout: (state) => {
+    logout: state => {
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
       // localStorage.removeItem('user'); // Clear local storage
     },
     // Reset forgot password state
-    resetForgotPasswordState: (state) => {
+    resetForgotPasswordState: state => {
       state.forgotPasswordStatus = "idle";
       state.forgotPasswordError = null;
     },
@@ -92,11 +90,11 @@ const userSlice = createSlice({
         state.isAuthenticated = true;
         state.error = null;
       })
-      .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(loginUser.rejected, (state, action: PayloadAction<string | undefined>) => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
-        state.error = action.payload || "Login failed"; 
+        state.error = action.payload || "Login failed";
       })
       .addCase(signupUser.pending, state => {
         state.isLoading = true;
@@ -107,7 +105,7 @@ const userSlice = createSlice({
         state.error = null; // Clear any previous errors
         state.user = action.payload;
       })
-      .addCase(signupUser.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(signupUser.rejected, (state, action: PayloadAction<string | undefined>) => {
         state.isLoading = false;
         state.error = action.payload || "Signup failed";
       })
@@ -120,10 +118,13 @@ const userSlice = createSlice({
         state.forgotPasswordStatus = "succeeded";
         state.forgotPasswordError = null;
       })
-      .addCase(requestPasswordReset.rejected, (state, action: PayloadAction<any>) => {
-        state.forgotPasswordStatus = "failed";
-        state.forgotPasswordError = action.payload || "Failed to send reset link";
-      });
+      .addCase(
+        requestPasswordReset.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.forgotPasswordStatus = "failed";
+          state.forgotPasswordError = action.payload || "Failed to send reset link";
+        }
+      );
   },
 });
 

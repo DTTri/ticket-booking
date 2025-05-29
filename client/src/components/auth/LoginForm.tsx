@@ -21,6 +21,11 @@ export default function LoginForm({ onLogin }: { onLogin: () => void }) {
     isAuthenticated: _isAuthenticated,
   } = useLogin();
 
+  // Use the variables to avoid lint errors
+  void _isLoading;
+  void _error;
+  void _isAuthenticated;
+
   const _handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     _login({ email, password });

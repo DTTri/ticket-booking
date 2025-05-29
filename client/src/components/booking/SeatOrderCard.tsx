@@ -8,7 +8,7 @@ export default function SeatOrderCard({
   onRemove,
 }: {
   seatOrder: Seat;
-  onRemove: (seatId: string) => void;
+  onRemove: (_seatId: string) => void;
 }) {
   return (
     <div className="w-[90%] relative h-[80px] border-1 border-[#000000] rounded-[4px] flex flex-row">

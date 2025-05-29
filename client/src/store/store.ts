@@ -21,7 +21,7 @@ export const store = configureStore({
         // Ignore these paths in the state
         ignoredPaths: ["items.dates"],
         // Allow Date objects in specific paths
-        isSerializable: (value: any) => {
+        isSerializable: (value: unknown) => {
           // Allow Date objects
           if (value instanceof Date) {
             return true;

@@ -17,6 +17,9 @@ export default function SignUpForm({ onSignUp }: { onSignUp: () => void }) {
   const { user } = useAuthSession();
   const { signup, error: _error, isLoading } = useSignup();
 
+  // Use the error variable to avoid lint errors
+  void _error;
+
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setUsername(e.target.value);
 

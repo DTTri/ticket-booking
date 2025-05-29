@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/libs/utils";
 
 interface CircularProgressProps {
-  size?: string | number; 
+  size?: string | number;
   color?: "primary" | "secondary" | "inherit" | string;
   thickness?: number;
   className?: string;
@@ -14,7 +14,8 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   thickness = 4,
   className,
 }) => {
-  const sizeInPx = typeof size === "number" ? size : parseFloat(size) * 16; 
+  // Remove unused variable
+  // const sizeInPx = typeof size === "number" ? size : parseFloat(size) * 16;
 
   const circleStyle: React.CSSProperties = {
     strokeWidth: thickness,
@@ -22,15 +23,14 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 
   let strokeColorClass = "stroke-blue-700";
   if (color === "primary") {
-    strokeColorClass = "stroke-primary"; 
+    strokeColorClass = "stroke-primary";
   } else if (color === "secondary") {
-    strokeColorClass = "stroke-gray-500"; 
+    strokeColorClass = "stroke-gray-500";
   } else if (color === "inherit") {
     strokeColorClass = "stroke-current";
-  } else if (typeof color === 'string') {
+  } else if (typeof color === "string") {
     // Custom color
   }
-
 
   return (
     <svg
@@ -56,8 +56,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
         strokeDasharray="31.415, 125.66" // Khoảng 1/4 chu vi (2*PI*R / 4)
         strokeLinecap="round"
         style={circleStyle}
-      >
-      </circle>
+      ></circle>
     </svg>
   );
 };
@@ -65,9 +64,9 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 const LoadingSpinner = () => {
   return (
     <div className="fixed inset-0 z-50 bg-slate-600 bg-opacity-50 flex items-center justify-center">
-      <CircularProgress size="3rem" color='primary'/>
+      <CircularProgress size="3rem" color="primary" />
     </div>
-  )
-}
+  );
+};
 
 export default LoadingSpinner;

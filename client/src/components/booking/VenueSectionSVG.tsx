@@ -9,7 +9,7 @@ interface VenueSectionSVGProps {
   isSelected: boolean;
   selectedSeats: string[];
   onSectionClick: () => void;
-  onSeatSelect: (seatId: string) => void;
+  onSeatSelect: (_seatId: string) => void;
   scale: number;
 }
 

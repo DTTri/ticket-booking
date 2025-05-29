@@ -1,31 +1,33 @@
 import axios from "axios";
-import Event, { EventStatus } from "../models/Event";
+import Event from "../models/Event";
 import { CreateEventDTO, RescheduleEventDTO, UpdateEventDTO } from "../models/DTO/EventDTO";
+import { ErrorHandler } from "@/utils/errorHandler";
 
 class EventService {
   API_URL = process.env.EVENT_API_URL || "http://localhost:8081";
 
-  parseEventDates(eventData: any): Event {
+  parseEventDates(
+    eventData: Partial<Event> & { startDateTime: string | Date; endDateTime: string | Date }
+  ): Event {
     return {
       ...eventData,
       // Đảm bảo createdAt và updatedAt cũng được parse nếu chúng tồn tại và là string date
-      createdAt: eventData.createdAt ? new Date(eventData.createdAt) : undefined,
-      updatedAt: eventData.updatedAt ? new Date(eventData.updatedAt) : undefined,
+      createdAt: eventData.createdAt ? new Date(eventData.createdAt) : new Date(),
+      updatedAt: eventData.updatedAt ? new Date(eventData.updatedAt) : new Date(),
       startDateTime: new Date(eventData.startDateTime),
       endDateTime: new Date(eventData.endDateTime),
-    };
+    } as Event;
   }
 
   async getAllEvents() {
     try {
       const response = await axios.get<Event[]>(`${this.API_URL}/events`);
       return response.data.map(event => this.parseEventDates(event));
-    } catch (error: any) {
-      console.log("Fetch event error: " + error.response?.data?.message || error.message);
+    } catch {
+      console.warn("Failed to fetch events from API, using sample data");
 
       // Fallback to sample data for development
       const { sampleEvents } = await import("@/libs/place-holder.data");
-      console.log("Using sample events data");
       return sampleEvents;
     }
   }
@@ -34,9 +36,8 @@ class EventService {
     try {
       const response = await axios.post<Event>(`${this.API_URL}/events`, eventData);
       return this.parseEventDates(response.data);
-    } catch (error: any) {
-      console.error("Create event error:", error.response?.data?.message || error.message);
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, "Create event");
     }
   }
 
@@ -47,21 +48,17 @@ class EventService {
         return this.parseEventDates(response.data);
       }
       return null;
-    } catch (error: any) {
-      console.error(
-        `Fetch event by ID (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
+    } catch (error) {
+      console.warn(`Failed to fetch event ${eventId} from API, trying sample data`);
 
       // Fallback to sample data for development
       const { sampleEvents } = await import("@/libs/place-holder.data");
       const sampleEvent = sampleEvents.find(event => event.eventId === eventId);
       if (sampleEvent) {
-        console.log(`Using sample data for event ${eventId}`);
         return sampleEvent;
       }
 
-      throw error;
+      ErrorHandler.handleServiceErrorFromCatch(error, `Fetch event by ID (${eventId})`);
     }
   }
 
@@ -69,12 +66,8 @@ class EventService {
     try {
       const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}`, eventData);
       return this.parseEventDates(response.data);
-    } catch (error: any) {
-      console.error(
-        `Update event (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, `Update event (${eventId})`);
     }
   };
 
@@ -85,12 +78,8 @@ class EventService {
         rescheduleEventDTO
       );
       return this.parseEventDates(response.data); // Giả sử API trả về Event object
-    } catch (error: any) {
-      console.error(
-        `Reschedule event (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, `Reschedule event (${eventId})`);
     }
   }
 
@@ -98,12 +87,8 @@ class EventService {
     try {
       const response = await axios.delete(`${this.API_URL}/events/${eventId}`);
       return response.data;
-    } catch (error: any) {
-      console.error(
-        `Delete event (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, `Delete event (${eventId})`);
     }
   }
 
@@ -111,12 +96,8 @@ class EventService {
     try {
       const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/cancel`);
       return this.parseEventDates(response.data);
-    } catch (error: any) {
-      console.error(
-        `Cancel event (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, `Cancel event (${eventId})`);
     }
   }
 
@@ -124,12 +105,8 @@ class EventService {
     try {
       const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/approve`);
       return this.parseEventDates(response.data);
-    } catch (error: any) {
-      console.error(
-        `Approve event (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, `Approve event (${eventId})`);
     }
   }
 
@@ -137,12 +114,8 @@ class EventService {
     try {
       const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/postpone`);
       return this.parseEventDates(response.data);
-    } catch (error: any) {
-      console.error(
-        `Postpone event (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, `Postpone event (${eventId})`);
     }
   }
 
@@ -152,12 +125,8 @@ class EventService {
         `${this.API_URL}/events/${eventId}/submit-for-approval`
       );
       return this.parseEventDates(response.data);
-    } catch (error: any) {
-      console.error(
-        `Submit event (${eventId}) error:`,
-        error.response?.data?.message || error.message
-      );
-      throw error;
+    } catch (error) {
+      ErrorHandler.handleServiceErrorFromCatch(error, `Submit event (${eventId})`);
     }
   }
 }

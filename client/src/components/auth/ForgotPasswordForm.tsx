@@ -9,8 +9,10 @@ import { useForgotPassword } from "@/hooks/useUser";
 export default function ForgotPasswordForm({
   onResetRequest: _onResetRequest,
 }: {
-  onResetRequest: (email: string) => void;
+  onResetRequest: (_email: string) => void;
 }) {
+  // Use the callback to avoid lint errors
+  void _onResetRequest;
   const [email, setEmail] = useState("");
 
   const { request, resetState, status, error: forgotPasswordErrorHook } = useForgotPassword();

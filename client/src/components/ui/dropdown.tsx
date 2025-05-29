@@ -7,7 +7,7 @@ import { Check, ChevronDown } from "lucide-react";
 interface DropdownProps {
   options: { value: string; label: string }[];
   value: string;
-  onChange: (value: string) => void;
+  onChange: (_value: string) => void;
   placeholder?: string;
   className?: string;
   buttonClassName?: string;

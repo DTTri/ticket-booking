@@ -6,7 +6,7 @@ export default function InfoNavigator({
   handleClick,
 }: {
   infoState: "details" | "about" | "tickets";
-  handleClick: (type: "details" | "about" | "tickets") => void;
+  handleClick: (_type: "details" | "about" | "tickets") => void;
 }) {
   return (
     <div className="w-full h-full flex flex-col">

@@ -8,7 +8,7 @@ import VenueSectionSVG from "./VenueSectionSVG";
 interface VenueMapSVGProps {
   venue: Venue;
   selectedSeats: string[];
-  onSeatSelect: (seatId: string) => void;
+  onSeatSelect: (_seatId: string) => void;
 }
 
 function VenueMapSVG({ venue, selectedSeats, onSeatSelect }: VenueMapSVGProps) {

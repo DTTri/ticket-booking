@@ -6,7 +6,7 @@ import VenueMapSVG from "./VenueMapSVG";
 import Seat from "@/models/Seat";
 
 interface SeatMapProps {
-  onSeatSelect?: (seat: Seat) => void;
+  onSeatSelect?: (_seat: Seat) => void;
   selectedSeats?: Seat[];
 }
 

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import eventService from "@/services/eventService";
 import Event from "@/models/Event";
 import { CreateEventDTO, RescheduleEventDTO, UpdateEventDTO } from "@/models/DTO/EventDTO";
-import { RootState } from "../store";
+import { ErrorHandler } from "@/utils/errorHandler";
 
 interface EventState {
   events: Event[];
@@ -32,8 +32,8 @@ export const fetchAllEvents = createAsyncThunk<Event[]>(
   async (_, { rejectWithValue }) => {
     try {
       return await eventService.getAllEvents();
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -44,8 +44,8 @@ export const fetchEventById = createAsyncThunk<Event | null, string>(
     try {
       const event = await eventService.getEventById(eventId);
       return event;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -55,22 +55,22 @@ export const createEvent = createAsyncThunk<Event, CreateEventDTO>(
   async (eventData, { rejectWithValue }) => {
     try {
       return await eventService.createEvent(eventData);
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
 
-export const updateEvent = createAsyncThunk<
-  Event,
-  { eventId: string; eventData: UpdateEventDTO }
->("events/updateEvent", async ({ eventId, eventData }, { rejectWithValue }) => {
-  try {
-    return await eventService.updateEvent(eventId, eventData);
-  } catch (error: any) {
-    return rejectWithValue(error.message);
+export const updateEvent = createAsyncThunk<Event, { eventId: string; eventData: UpdateEventDTO }>(
+  "events/updateEvent",
+  async ({ eventId, eventData }, { rejectWithValue }) => {
+    try {
+      return await eventService.updateEvent(eventId, eventData);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
+    }
   }
-});
+);
 
 export const deleteEvent = createAsyncThunk<string, string>( // Returns eventId on success for easier removal from state
   "events/remove",
@@ -78,31 +78,30 @@ export const deleteEvent = createAsyncThunk<string, string>( // Returns eventId 
     try {
       await eventService.deleteEvent(eventId);
       return eventId;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
 
-export const rescheduleEvent = createAsyncThunk<Event,  { eventId: string; rescheduleData: RescheduleEventDTO }>(
-  "events/reschedule",
-  async ({ eventId, rescheduleData }, { rejectWithValue }) => {
-    try {
-      return await eventService.rescheduleEvent(eventId, rescheduleData);
-    }
-    catch (error: any) {
-      return rejectWithValue(error.message);
-    }
+export const rescheduleEvent = createAsyncThunk<
+  Event,
+  { eventId: string; rescheduleData: RescheduleEventDTO }
+>("events/reschedule", async ({ eventId, rescheduleData }, { rejectWithValue }) => {
+  try {
+    return await eventService.rescheduleEvent(eventId, rescheduleData);
+  } catch (error) {
+    return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
   }
-)
+});
 
 export const postponeEvent = createAsyncThunk<Event, string>(
   "events/postpone",
   async (eventId, { rejectWithValue }) => {
     try {
       return await eventService.postponeEvent(eventId);
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -112,8 +111,8 @@ export const cancelEvent = createAsyncThunk<Event, string>(
   async (eventId, { rejectWithValue }) => {
     try {
       return await eventService.cancelEvent(eventId);
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -123,8 +122,8 @@ export const approveEvent = createAsyncThunk<Event, string>(
   async (eventId, { rejectWithValue }) => {
     try {
       return await eventService.approveEvent(eventId);
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -134,12 +133,11 @@ export const submitEvent = createAsyncThunk<Event, string>(
   async (eventId, { rejectWithValue }) => {
     try {
       return await eventService.submitEvent(eventId);
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
-
 
 const eventSlice = createSlice({
   name: "events",

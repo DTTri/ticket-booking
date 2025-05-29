@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import venueService from "@/services/venueService";
 import { Venue, Section } from "@/models/Venue";
 import {
@@ -7,6 +7,7 @@ import {
   CreateSectionDTO,
   UpdateSectionDTO,
 } from "@/models/DTO/VenueDTO";
+import { ErrorHandler } from "@/utils/errorHandler";
 
 interface VenueState {
   venues: Venue[];
@@ -40,10 +41,8 @@ export const fetchAllVenues = createAsyncThunk<Venue[]>(
   async (_, { rejectWithValue }) => {
     try {
       return await venueService.getAllVenues();
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || error.message || "Failed to fetch venues"
-      );
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -53,10 +52,8 @@ export const fetchVenueById = createAsyncThunk<Venue | null, string>(
   async (venueId, { rejectWithValue }) => {
     try {
       return await venueService.getVenueById(venueId);
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || error.message || "Failed to fetch venue details"
-      );
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -66,10 +63,8 @@ export const createNewVenue = createAsyncThunk<Venue, CreateVenueDTO>(
   async (venueData, { rejectWithValue }) => {
     try {
       return await venueService.createVenue(venueData);
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || error.message || "Failed to create venue"
-      );
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -80,10 +75,8 @@ export const updateExistingVenue = createAsyncThunk<
 >("venues/update", async ({ venueId, venueData }, { rejectWithValue }) => {
   try {
     return await venueService.updateVenue(venueId, venueData);
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || error.message || "Failed to update venue"
-    );
+  } catch (error) {
+    return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
   }
 });
 
@@ -93,10 +86,8 @@ export const deleteExistingVenue = createAsyncThunk<string, string>(
     try {
       await venueService.deleteVenue(venueId);
       return venueId;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || error.message || "Failed to delete venue"
-      );
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
 );
@@ -109,10 +100,8 @@ export const fetchSectionsForVenue = createAsyncThunk<
   try {
     const sections = await venueService.getAllSectionsForVenue(venueId);
     return { venueId, sections };
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || error.message || "Failed to fetch sections"
-    );
+  } catch (error) {
+    return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
   }
 });
 
@@ -122,10 +111,8 @@ export const createNewSection = createAsyncThunk<
 >("venues/sections/create", async ({ venueId, sectionData }, { rejectWithValue }) => {
   try {
     return await venueService.createSection(venueId, sectionData);
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || error.message || "Failed to create section"
-    );
+  } catch (error) {
+    return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
   }
 });
 
@@ -135,10 +122,8 @@ export const updateExistingSection = createAsyncThunk<
 >("venues/sections/update", async ({ venueId, sectionId, sectionData }, { rejectWithValue }) => {
   try {
     return await venueService.updateSection(venueId, sectionId, sectionData);
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || error.message || "Failed to update section"
-    );
+  } catch (error) {
+    return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
   }
 });
 
@@ -149,10 +134,8 @@ export const deleteExistingSection = createAsyncThunk<
   try {
     await venueService.deleteSection(venueId, sectionId);
     return { venueId, sectionId };
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || error.message || "Failed to delete section"
-    );
+  } catch (error) {
+    return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
   }
 });
 
