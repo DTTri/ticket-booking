@@ -105,7 +105,7 @@ jobs:
             docker rm ticket-booking-container || true
 
             # Create a Docker network for the containers
-            docker network create ticket-app-network || true
+            docker network create --driver=overlay --attachable ticket-app-network || true
 
             # Run the Next.js application container
             docker run -d --name ticket-booking-container \
