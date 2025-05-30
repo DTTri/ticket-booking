@@ -3,7 +3,9 @@ import ConfirmPopup from "@/components/booking/ConfirmPopup";
 import SeatMap from "@/components/booking/SeatMap";
 import SeatOrderCard from "@/components/booking/SeatOrderCard";
 import { Button } from "@/components/ui/button";
+import { useBookingMutations } from "@/hooks/useBooking";
 import { useEventDetails } from "@/hooks/useEvents";
+import { useVenueDetails } from "@/hooks/useVenue";
 import Seat from "@/models/Seat";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,17 +24,21 @@ export default function BookingPage() {
     loadEvent,
     clearDetails,
   } = useEventDetails();
-
+  const { loadVenue, venue } = useVenueDetails();
+  const { bookSeats } = useBookingMutations();
   useEffect(() => {
     if (eventId) {
       loadEvent(eventId as string);
     }
-
     return () => {
       clearDetails();
     };
   }, [eventId, loadEvent, clearDetails]);
-
+  useEffect(() => {
+    if (curEvent) {
+      loadVenue(curEvent.venueId);
+    }
+  }, [curEvent]);
   const handleRemoveSeat = (seatId: string) => {
     setSelectedSeats(prevSeats => prevSeats.filter(seat => seat.SeatId !== seatId));
   };
@@ -49,7 +55,26 @@ export default function BookingPage() {
   };
 
   const handleBookClick = () => {
-    router.push(`/booking/payment/${eventId}`);
+    if (!eventId) return;
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat.");
+      return;
+    }
+    // if (selectedSeats.length > 1) {
+    //   const rowNumbers = selectedSeats.map(seat => Number(seat.RowNumber));
+    //   const minRow = Math.min(...rowNumbers);
+    //   const maxRow = Math.max(...rowNumbers);
+    //   if (
+    //     maxRow - minRow > 1 ||
+    //     selectedSeats.sort((a, b) => a.SeatInRow - b.SeatInRow)[0].SeatInRow -
+    //       selectedSeats.sort((a, b) => a.SeatInRow - b.SeatInRow)[0].SeatInRow >
+    //       1
+    //   ) {
+    //     alert("Please select continuous seats.");
+    //     return;
+    //   }
+    // }
+    setIsOpenConfirmPopup(true);
   };
 
   // Show loading state
@@ -112,21 +137,45 @@ export default function BookingPage() {
         </div>
       </div>
       <div className="w-[60%] h-full">
-        <SeatMap selectedSeats={selectedSeats} onSeatSelect={handleSeatSelect} />
+        <SeatMap
+          eventId={eventId as string}
+          selectedSeats={selectedSeats}
+          onSeatSelect={handleSeatSelect}
+        />
       </div>
       {isOpenConfirmPopup && (
         <ConfirmPopup
-          eventName="FC Barcelona vs Real Madrid"
-          stadium="My Dinh Stadium"
-          location="Ha Noi, Vietnam"
-          date="Mar 22 • Sat • 2025"
-          time="19:30 - 23:30"
-          section="99"
-          row="C"
-          seats="4-10"
-          ticketPrice={10}
-          quantity={7}
-          onConfirm={() => {}}
+          eventName={curEvent?.name}
+          stadium={curEvent?.venueName}
+          location={curEvent?.venueAddress}
+          date={
+            curEvent?.startDateTime
+              ? new Date(curEvent.startDateTime).toLocaleString()
+              : "Date not available"
+          }
+          time={
+            curEvent?.startDateTime
+              ? new Date(curEvent.startDateTime).toLocaleTimeString()
+              : "Time not available"
+          }
+          section={
+            venue?.sections.find(s => s.sectionId === selectedSeats[0]?.SectionId)?.name || ""
+          }
+          row={selectedSeats[0]?.RowNumber}
+          seats={selectedSeats.map(seat => seat.SeatNumber).join(", ")}
+          ticketPrice={
+            venue?.sections.find(s => s.sectionId === selectedSeats[0]?.SectionId)?.price || 0
+          }
+          quantity={selectedSeats.length}
+          onConfirm={() => {
+            setIsOpenConfirmPopup(false);
+            if (!eventId) return;
+            bookSeats({
+              eventId: Array.isArray(eventId) ? eventId[0] : eventId,
+              seatIds: selectedSeats.map(seat => seat.SeatId),
+            });
+            router.push(`/booking/payment/${eventId}`);
+          }}
           onClose={() => setIsOpenConfirmPopup(false)}
         />
       )}

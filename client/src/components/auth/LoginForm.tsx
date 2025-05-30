@@ -39,12 +39,12 @@ export default function LoginForm({ onLogin }: { onLogin: () => void }) {
 
       <form className="flex flex-col gap-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Email
           </label>
           <TextField
-            placeholder="Name"
-            id="name"
+            placeholder="Email"
+            id="email"
             className="mt-1"
             value={email}
             onChange={handleEmailChange}

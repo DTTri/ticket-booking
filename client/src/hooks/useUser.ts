@@ -17,8 +17,7 @@ import {
   selectForgotPasswordStatus,
   selectForgotPasswordError,
 } from "@/store/user/userSelector";
-import type { LoginCredentials } from "@/models/User";
-import type { UserSignupDTO } from "@/models/DTO/UserDTO";
+import { LoginDTO, SignupDTO } from "@/services/types/authTypes";
 
 /**
  * Hook to get current authentication session data.
@@ -29,10 +28,6 @@ export const useAuthSession = () => {
   return { user, isAuthenticated };
 };
 
-/**
- * Hook for handling user login.
- * Returns a login function and the current loading/error/authentication state.
- */
 export const useLogin = () => {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(selectAuthLoading);
@@ -40,8 +35,7 @@ export const useLogin = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   const login = useCallback(
-    async (credentials: LoginCredentials) => {
-      // .unwrap() will return a promise that either resolves with the action.payload or rejects with action.payload or action.error
+    async (credentials: LoginDTO) => {
       return dispatch(loginUser(credentials)).unwrap();
     },
     [dispatch]
@@ -50,17 +44,13 @@ export const useLogin = () => {
   return { login, isLoading, error, isAuthenticated };
 };
 
-/**
- * Hook for handling user signup.
- * Returns a signup function and the current loading/error state.
- */
 export const useSignup = () => {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(selectAuthLoading);
   const error = useAppSelector(selectAuthError);
 
   const signup = useCallback(
-    async (userData: UserSignupDTO) => {
+    async (userData: SignupDTO) => {
       return dispatch(signupUser(userData)).unwrap();
     },
     [dispatch]
@@ -69,9 +59,6 @@ export const useSignup = () => {
   return { signup, isLoading, error };
 };
 
-/**
- * Hook for handling user logout.
- */
 export const useLogout = () => {
   const dispatch = useAppDispatch();
   const logout = useCallback(() => {
@@ -81,9 +68,6 @@ export const useLogout = () => {
   return { logout };
 };
 
-/**
- * Hook for handling forgot password functionality.
- */
 export const useForgotPassword = () => {
   const dispatch = useAppDispatch();
   const status = useAppSelector(selectForgotPasswordStatus);

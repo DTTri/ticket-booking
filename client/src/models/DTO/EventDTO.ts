@@ -10,7 +10,6 @@ export type CreateEventDTO = {
   venueName: string;
   venueAddress: string;
   poster: string;
-  organizerUserId: string;
   images: string[];
   details?: string;
   sectionPricing: SectionPricingDTO[];

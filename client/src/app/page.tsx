@@ -22,13 +22,12 @@ export default function HomePage() {
     const fetchEvents = async () => {
       try {
         await loadEvents();
-        console.warn(events.length);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
     };
     fetchEvents();
-  }, [loadEvents, events.length]);
+  }, [loadEvents]);
 
   if (isLoadingList) {
     <LoadingSpinner />;

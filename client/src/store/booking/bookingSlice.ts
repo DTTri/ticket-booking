@@ -1,65 +1,118 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Seat } from "@/models/Venue";
+import { bookingService } from "@/services/bookingService";
+import { BookDTO, Booking, BookingSeat } from "@/services/types/bookingTypes";
+import { ErrorHandler } from "@/utils/errorHandler";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface BookingState {
-  selectedSeats: Seat[];
-  eventId: string | null;
-  totalPrice: number;
+  myBookings: Booking[];
+  currentBooking: Booking | null;
+  currentEventBookingSeats: BookingSeat[];
+  isLoadingList: boolean;
+  isLoadingDetails: boolean;
+  isLoadingMutation: boolean;
+  errorList: string | null;
+  errorDetails: string | null;
+  errorMutation: string | null;
 }
 
 const initialState: BookingState = {
-  selectedSeats: [],
-  eventId: null,
-  totalPrice: 0,
+  myBookings: [],
+  currentBooking: null,
+  currentEventBookingSeats: [],
+  isLoadingList: false,
+  isLoadingDetails: false,
+  isLoadingMutation: false,
+  errorList: null,
+  errorDetails: null,
+  errorMutation: null,
 };
 
-const bookingSlice = createSlice({
-  name: "booking",
+// Async Thunks
+export const fetchMyBookings = createAsyncThunk<Booking[]>(
+  "bookings/fetchMyBookings",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await bookingService.getMyBookings();
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
+    }
+  }
+);
+
+export const fetchBookingById = createAsyncThunk<BookingSeat[], string>(
+  "bookings/fetchById",
+  async (eventId, { rejectWithValue }) => {
+    try {
+      return await bookingService.getBookingById(eventId);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
+    }
+  }
+);
+
+export const bookSeats = createAsyncThunk<Booking, BookDTO>(
+  "bookings/bookSeats",
+  async (bookingData, { rejectWithValue }) => {
+    try {
+      return await bookingService.bookSeats(bookingData);
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
+    }
+  }
+);
+export const bookingSlice = createSlice({
+  name: "bookings",
   initialState,
   reducers: {
-    setEventId: (state, action: PayloadAction<string>) => {
-      state.eventId = action.payload;
+    clearCurrentBooking: state => {
+      state.currentBooking = null;
+      state.errorDetails = null;
     },
-    addSeat: (state, action: PayloadAction<{ seat: Seat; price: number }>) => {
-      const { seat, price } = action.payload;
-      const existingSeat = state.selectedSeats.find(s => s.seatId === seat.seatId);
-      if (!existingSeat) {
-        state.selectedSeats.push(seat);
-        state.totalPrice += price;
-      }
-    },
-    removeSeat: (state, action: PayloadAction<{ seatId: string; price: number }>) => {
-      const { seatId, price } = action.payload;
-      state.selectedSeats = state.selectedSeats.filter(seat => seat.seatId !== seatId);
-      state.totalPrice -= price;
-    },
-    toggleSeat: (state, action: PayloadAction<{ seat: Seat; price: number }>) => {
-      const { seat, price } = action.payload;
-      const existingSeatIndex = state.selectedSeats.findIndex(s => s.seatId === seat.seatId);
-
-      if (existingSeatIndex !== -1) {
-        // Remove seat
-        state.selectedSeats.splice(existingSeatIndex, 1);
-        state.totalPrice -= price;
-      } else {
-        // Add seat
-        state.selectedSeats.push(seat);
-        state.totalPrice += price;
-      }
-    },
-    clearSelectedSeats: state => {
-      state.selectedSeats = [];
-      state.totalPrice = 0;
-    },
-    clearBooking: state => {
-      state.selectedSeats = [];
-      state.eventId = null;
-      state.totalPrice = 0;
+    clearMutationError: state => {
+      state.errorMutation = null;
     },
   },
+  extraReducers: builder =>
+    builder
+      .addCase(fetchMyBookings.pending, state => {
+        state.isLoadingList = true;
+        state.errorList = null;
+      })
+      .addCase(fetchMyBookings.fulfilled, (state, action) => {
+        state.isLoadingList = false;
+        state.myBookings = action.payload;
+      })
+      .addCase(fetchMyBookings.rejected, (state, action) => {
+        state.isLoadingList = false;
+        state.errorList = action.payload as string;
+      })
+      .addCase(fetchBookingById.pending, state => {
+        state.isLoadingDetails = true;
+        state.errorDetails = null;
+        state.currentEventBookingSeats = [];
+      })
+      .addCase(fetchBookingById.fulfilled, (state, action) => {
+        state.isLoadingDetails = false;
+        state.currentEventBookingSeats = action.payload;
+      })
+      .addCase(fetchBookingById.rejected, (state, action) => {
+        state.isLoadingDetails = false;
+        state.errorDetails = action.payload as string;
+      })
+      .addCase(bookSeats.pending, state => {
+        state.isLoadingMutation = true;
+        state.errorMutation = null;
+      })
+      .addCase(bookSeats.fulfilled, (state, action) => {
+        state.isLoadingMutation = false;
+        state.currentBooking = action.payload;
+        state.myBookings.push(action.payload);
+      })
+      .addCase(bookSeats.rejected, (state, action) => {
+        state.isLoadingMutation = false;
+        state.errorMutation = action.payload as string;
+      }),
 });
 
-export const { setEventId, addSeat, removeSeat, toggleSeat, clearSelectedSeats, clearBooking } =
-  bookingSlice.actions;
-
+export const { clearCurrentBooking, clearMutationError } = bookingSlice.actions;
 export default bookingSlice.reducer;

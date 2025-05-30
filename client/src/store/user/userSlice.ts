@@ -1,8 +1,21 @@
-import { UserSignupDTO } from "@/models/DTO/UserDTO";
-import { LoginCredentials, User } from "@/models/User";
-import authService from "@/services/userService";
+import { User } from "@/models/User";
+import authService from "@/services/authService";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ErrorHandler } from "@/utils/errorHandler";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import { UserRole } from "@/constants";
+import { LoginDTO, SignupDTO, LoginResponse } from "@/services/types/authTypes";
+
+interface JWTPayload {
+  sub: string; // User ID
+  email: string;
+  jti: string; // JWT ID
+  role: string; // Role as string
+  nbf: number; // Not before
+  exp: number; // Expiration
+  iat: number; // Issued at
+}
 
 interface UserState {
   user: User | null;
@@ -22,9 +35,9 @@ const initialState: UserState = {
   forgotPasswordError: null,
 };
 
-export const loginUser = createAsyncThunk(
+export const loginUser = createAsyncThunk<LoginResponse, LoginDTO>(
   "user/login",
-  async (credentials: LoginCredentials, { rejectWithValue }) => {
+  async (credentials: LoginDTO, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
       return response;
@@ -36,14 +49,11 @@ export const loginUser = createAsyncThunk(
 
 export const signupUser = createAsyncThunk(
   "auth/signup",
-  async (userData: UserSignupDTO, { rejectWithValue }) => {
+  async (userData: SignupDTO, { rejectWithValue }) => {
     try {
       const data = await authService.signup(userData);
-      // TODO: Handle the response as needed
       return data as User;
     } catch (error) {
-      //The error handling is done in the slice
-      //error will be passed to the ActionPayload
       return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
   }
@@ -69,7 +79,8 @@ const userSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
-      // localStorage.removeItem('user'); // Clear local storage
+      // Clear token from cookies
+      Cookies.remove("token");
     },
     // Reset forgot password state
     resetForgotPasswordState: state => {
@@ -84,11 +95,51 @@ const userSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
         state.isLoading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.error = null;
+
+        const { token, expiration } = action.payload;
+
+        const expirationDate = new Date(expiration);
+        Cookies.set("token", token, {
+          expires: expirationDate,
+        });
+
+        try {
+          const decoded: JWTPayload = jwtDecode(token);
+
+          // Map role string to UserRole enum
+          const mapRole = (roleString: string): UserRole => {
+            switch (roleString.toUpperCase()) {
+              case "USER":
+                return UserRole.USER;
+              case "ORGANIZER":
+                return UserRole.ORGANIZER;
+              case "ADMIN":
+                return UserRole.ADMIN;
+              default:
+                return UserRole.USER;
+            }
+          };
+
+          const user: User = {
+            userId: decoded.sub,
+            userName: decoded.email.split("@")[0], // Extract username from email
+            email: decoded.email,
+            firstName: "",
+            lastName: "",
+            role: mapRole(decoded.role),
+          };
+          console.log(user);
+
+          state.user = user;
+          state.isAuthenticated = true;
+          state.error = null;
+        } catch (error) {
+          console.error("Failed to decode JWT token:", error);
+          state.error = "Failed to process login response";
+          state.isAuthenticated = false;
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;

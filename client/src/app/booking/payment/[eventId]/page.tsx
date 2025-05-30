@@ -3,7 +3,7 @@ import TimeCount from "@/components/booking/TimeCount";
 import TimeInfoConfirmPopup from "@/components/booking/TimeInfoConfirmPopup";
 import { sampleEvents } from "@/libs/place-holder.data";
 import Event from "@/models/Event";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { TextField } from "@/components/ui/textinput";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,11 @@ import { ChevronRight } from "lucide-react";
 import { CreditCard } from "lucide-react";
 import TicketCard from "@/components/booking/TicketCard";
 import Image from "next/image";
+import { useProcessPayment } from "@/hooks/usePayment";
+import { useBookingDetails } from "@/hooks/useBooking";
+import { useAuthSession } from "@/hooks/useUser";
+import { PaymentDTO } from "@/models/DTO/PaymentDTO";
+import LoadingSpinner from "@/components/ui/loading";
 
 const fetchBookingEvent = async (eventId: string) => {
   // const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
@@ -46,6 +51,18 @@ const sampleQRCodeData: QRCodeType[] = Array.from({ length: 5 }, (_, index) => (
 
 export default function PaymentPage() {
   const { eventId } = useParams();
+  const router = useRouter();
+
+  // Redux hooks
+  const { currentBooking } = useBookingDetails();
+  const { user } = useAuthSession();
+  const {
+    processPayment,
+    paymentResponse,
+    isLoading: isProcessingPayment,
+    error: paymentError,
+    clearError: clearPaymentError,
+  } = useProcessPayment();
 
   const [curEvent, setCurEvent] = useState<Event>();
   const [paymentState, setPaymentState] = useState<paymetState>("delivery");
@@ -78,6 +95,20 @@ export default function PaymentPage() {
     };
     loadEventDataDetail();
   }, [eventId]);
+
+  // Handle successful payment
+  useEffect(() => {
+    if (paymentResponse && paymentState === "payment") {
+      setPaymentState("confirm");
+    }
+  }, [paymentResponse, paymentState]);
+
+  // Clear payment error when user starts typing
+  useEffect(() => {
+    if (paymentError && (cardNumber || cardHolder || expiryDate || cvv)) {
+      clearPaymentError();
+    }
+  }, [cardNumber, cardHolder, expiryDate, cvv, paymentError, clearPaymentError]);
 
   const handleTimeEnd = useCallback(
     () => () => {
@@ -132,12 +163,45 @@ export default function PaymentPage() {
     setPaymentState("payment");
   };
 
-  const handlePaymentContinue = () => {
+  const handlePaymentContinue = async () => {
     if (!cardNumber || !cardHolder || !expiryDate || !cvv) {
       alert("Please fill in all payment fields.");
       return;
     }
-    setPaymentState("confirm");
+
+    if (!currentBooking?.bookingId) {
+      alert("No booking found. Please try again.");
+      return;
+    }
+
+    if (!user?.userId) {
+      alert("User not authenticated. Please log in.");
+      return;
+    }
+
+    try {
+      // Parse expiry date (MM/YY format)
+      const [month, year] = expiryDate.split("/");
+
+      const paymentData: PaymentDTO = {
+        bookingId: currentBooking.bookingId,
+        userId: user.userId,
+        fullName: fullName,
+        email: email,
+        phoneNumber: phone,
+        cardNumber: cardNumber,
+        cardHolderName: cardHolder,
+        expiryMonth: month.padStart(2, "0"),
+        expiryYear: `20${year}`, // Convert YY to YYYY
+        cvv: cvv,
+      };
+
+      await processPayment(paymentData);
+      // State will be changed automatically in useEffect when paymentResponse is received
+    } catch (error) {
+      console.error("Payment failed:", error);
+      alert("Payment failed. Please try again.");
+    }
   };
 
   return (
@@ -278,8 +342,25 @@ export default function PaymentPage() {
                 </div>
               </div>
 
-              <Button className="w-full py-5" onClick={handlePaymentContinue}>
-                Continue
+              {paymentError && (
+                <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                  {paymentError}
+                </div>
+              )}
+
+              <Button
+                className="w-full py-5"
+                onClick={handlePaymentContinue}
+                disabled={isProcessingPayment}
+              >
+                {isProcessingPayment ? (
+                  <div className="flex items-center gap-2">
+                    <LoadingSpinner />
+                    Processing Payment...
+                  </div>
+                ) : (
+                  "Continue"
+                )}
               </Button>
             </div>
           )}
@@ -287,10 +368,18 @@ export default function PaymentPage() {
           {paymentState === "confirm" && (
             <div className="w-full flex flex-col items-start gap-5">
               <div className="w-full flex flex-col items-start">
-                <p className="text-[24px] font-bold text-[#000]">Enjoy the event</p>
+                <p className="text-[24px] font-bold text-[#000]">Payment Successful!</p>
                 <p className="text-[16px] font-semibold text-[#686868]">
                   Tickets will be delivered within minutes to your email also.
                 </p>
+                {paymentResponse && (
+                  <div className="w-full mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                    <p className="font-semibold">Payment ID: {paymentResponse.paymentId}</p>
+                    <p>Transaction ID: {paymentResponse.transactionId}</p>
+                    <p>Status: {paymentResponse.status}</p>
+                    <p>Amount: ${paymentResponse.amount}</p>
+                  </div>
+                )}
               </div>
               <div className="w-full px-4 grid grid-cols-2 gap-4">
                 {selectedSeats?.map((ticket, index) => (
@@ -305,6 +394,14 @@ export default function PaymentPage() {
                     venue={ticket.venue}
                   />
                 ))}
+              </div>
+              <div className="w-full flex gap-4">
+                <Button className="flex-1 py-3" onClick={() => router.push("/orders")}>
+                  View My Orders
+                </Button>
+                <Button className="flex-1 py-3" variant="outline" onClick={() => router.push("/")}>
+                  Back to Home
+                </Button>
               </div>
             </div>
           )}

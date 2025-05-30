@@ -1,24 +1,28 @@
-import { UpdateEventDTO } from "@/models/DTO/EventDTO";
+import BaseService from "./baseService";
+import { UpdateVenueDTO } from "@/models/DTO/VenueDTO";
 import { CreateSectionDTO, CreateVenueDTO, UpdateSectionDTO } from "@/models/DTO/VenueDTO";
 import { Section, Venue } from "@/models/Venue";
-import axios from "axios";
 import { ErrorHandler } from "@/utils/errorHandler";
 
-class VenueService {
-  API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8083/api"; // Replace with your actual backend URL
+class VenueService extends BaseService {
+  constructor() {
+    super("/Venues", {
+      baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8083/api",
+    });
+  }
 
-  async getAllVenues() {
+  async getAllVenues(): Promise<Venue[]> {
     try {
-      const response = await axios.get(`${this.API_URL}/Venues`);
+      const response = await this.get<Venue[]>("");
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, "Fetch venues");
     }
   }
 
-  async getVenueById(venueId: string) {
+  async getVenueById(venueId: string): Promise<Venue> {
     try {
-      const response = await axios.get(`${this.API_URL}/Venues/${venueId}`);
+      const response = await this.get<Venue>(`/${venueId}`);
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, "Fetch venue by ID");
@@ -27,16 +31,16 @@ class VenueService {
 
   async createVenue(venueData: CreateVenueDTO): Promise<Venue> {
     try {
-      const response = await axios.post<Venue>(`${this.API_URL}/Venues`, venueData);
+      const response = await this.post<Venue>("", venueData);
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, "Create venue");
     }
   }
 
-  async updateVenue(venueId: string, venueData: UpdateEventDTO): Promise<Venue> {
+  async updateVenue(venueId: string, venueData: UpdateVenueDTO): Promise<Venue> {
     try {
-      const response = await axios.put<Venue>(`${this.API_URL}/Venues/${venueId}`, venueData);
+      const response = await this.put<Venue>(`/${venueId}`, venueData);
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Update venue (${venueId})`);
@@ -45,7 +49,7 @@ class VenueService {
 
   async deleteVenue(venueId: string): Promise<void> {
     try {
-      await axios.delete(`${this.API_URL}/Venues/${venueId}`);
+      await this.delete(`/${venueId}`);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Delete venue (${venueId})`);
     }
@@ -53,7 +57,8 @@ class VenueService {
 
   async getAllSectionsForVenue(venueId: string): Promise<Section[]> {
     try {
-      const response = await axios.get<Section[]>(`${this.API_URL}/venues/${venueId}/sections`);
+      // Note: Using different path structure for sections
+      const response = await this.get<Section[]>(`/../venues/${venueId}/sections`);
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Fetch sections for venue (${venueId})`);
@@ -62,9 +67,7 @@ class VenueService {
 
   async getSectionById(venueId: string, sectionId: string): Promise<Section> {
     try {
-      const response = await axios.get<Section>(
-        `${this.API_URL}/venues/${venueId}/sections/${sectionId}`
-      );
+      const response = await this.get<Section>(`/../venues/${venueId}/sections/${sectionId}`);
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(
@@ -76,10 +79,7 @@ class VenueService {
 
   async createSection(venueId: string, sectionData: CreateSectionDTO): Promise<Section> {
     try {
-      const response = await axios.post<Section>(
-        `${this.API_URL}/venues/${venueId}/sections`,
-        sectionData
-      );
+      const response = await this.post<Section>(`/../venues/${venueId}/sections`, sectionData);
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Create section for venue (${venueId})`);
@@ -92,8 +92,8 @@ class VenueService {
     sectionData: UpdateSectionDTO
   ): Promise<Section> {
     try {
-      const response = await axios.put<Section>(
-        `${this.API_URL}/venues/${venueId}/sections/${sectionId}`,
+      const response = await this.put<Section>(
+        `/../venues/${venueId}/sections/${sectionId}`,
         sectionData
       );
       return response.data;
@@ -107,7 +107,7 @@ class VenueService {
 
   async deleteSection(venueId: string, sectionId: string): Promise<void> {
     try {
-      await axios.delete(`${this.API_URL}/venues/${venueId}/sections/${sectionId}`);
+      await this.delete(`/../venues/${venueId}/sections/${sectionId}`);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(
         error,

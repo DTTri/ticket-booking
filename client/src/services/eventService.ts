@@ -1,10 +1,14 @@
-import axios from "axios";
+import BaseService from "./baseService";
 import Event from "../models/Event";
 import { CreateEventDTO, RescheduleEventDTO, UpdateEventDTO } from "../models/DTO/EventDTO";
 import { ErrorHandler } from "@/utils/errorHandler";
 
-class EventService {
-  API_URL = process.env.EVENT_API_URL || "http://localhost:8081";
+class EventService extends BaseService {
+  constructor() {
+    super("/events", {
+      baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081",
+    });
+  }
 
   parseEventDates(
     eventData: Partial<Event> & { startDateTime: string | Date; endDateTime: string | Date }
@@ -19,111 +23,95 @@ class EventService {
     } as Event;
   }
 
-  async getAllEvents() {
+  async getAllEvents(): Promise<Event[]> {
     try {
-      const response = await axios.get<Event[]>(`${this.API_URL}/events`);
+      const response = await this.get<Event[]>("");
       return response.data.map(event => this.parseEventDates(event));
     } catch {
       console.warn("Failed to fetch events from API, using sample data");
-
-      // Fallback to sample data for development
-      const { sampleEvents } = await import("@/libs/place-holder.data");
-      return sampleEvents;
+      return [];
     }
   }
 
-  async createEvent(eventData: CreateEventDTO) {
+  async createEvent(eventData: CreateEventDTO): Promise<Event> {
     try {
-      const response = await axios.post<Event>(`${this.API_URL}/events`, eventData);
+      const response = await this.post<Event>("", eventData);
       return this.parseEventDates(response.data);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, "Create event");
     }
   }
 
-  async getEventById(eventId: string) {
+  async getEventById(eventId: string): Promise<Event | null> {
     try {
-      const response = await axios.get<Event>(`${this.API_URL}/events/${eventId}`);
+      const response = await this.get<Event>(`/${eventId}`);
       if (response.data) {
         return this.parseEventDates(response.data);
       }
       return null;
     } catch (error) {
       console.warn(`Failed to fetch event ${eventId} from API, trying sample data`);
-
-      // Fallback to sample data for development
-      const { sampleEvents } = await import("@/libs/place-holder.data");
-      const sampleEvent = sampleEvents.find(event => event.eventId === eventId);
-      if (sampleEvent) {
-        return sampleEvent;
-      }
-
       ErrorHandler.handleServiceErrorFromCatch(error, `Fetch event by ID (${eventId})`);
     }
   }
 
-  updateEvent = async (eventId: string, eventData: UpdateEventDTO) => {
+  updateEvent = async (eventId: string, eventData: UpdateEventDTO): Promise<Event> => {
     try {
-      const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}`, eventData);
+      const response = await this.patch<Event>(`/${eventId}`, eventData);
       return this.parseEventDates(response.data);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Update event (${eventId})`);
     }
   };
 
-  async rescheduleEvent(eventId: string, rescheduleEventDTO: RescheduleEventDTO) {
+  async rescheduleEvent(eventId: string, rescheduleEventDTO: RescheduleEventDTO): Promise<Event> {
     try {
-      const response = await axios.patch<Event>(
-        `${this.API_URL}/events/${eventId}/reschedule`,
-        rescheduleEventDTO
-      );
+      const response = await this.patch<Event>(`/${eventId}/reschedule`, rescheduleEventDTO);
       return this.parseEventDates(response.data); // Giả sử API trả về Event object
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Reschedule event (${eventId})`);
     }
   }
 
-  async deleteEvent(eventId: string) {
+  async deleteEvent(eventId: string): Promise<unknown> {
     try {
-      const response = await axios.delete(`${this.API_URL}/events/${eventId}`);
+      const response = await this.delete(`/${eventId}`);
       return response.data;
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Delete event (${eventId})`);
     }
   }
 
-  async cancelEvent(eventId: string) {
+  async cancelEvent(eventId: string): Promise<Event> {
     try {
-      const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/cancel`);
+      const response = await this.patch<Event>(`/${eventId}/cancel`);
       return this.parseEventDates(response.data);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Cancel event (${eventId})`);
     }
   }
 
-  async approveEvent(eventId: string) {
+  async approveEvent(eventId: string): Promise<Event> {
     try {
-      const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/approve`);
+      const response = await this.patch<Event>(`/${eventId}/approve`);
       return this.parseEventDates(response.data);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Approve event (${eventId})`);
     }
   }
 
-  async postponeEvent(eventId: string) {
+  async postponeEvent(eventId: string): Promise<Event> {
     try {
-      const response = await axios.patch<Event>(`${this.API_URL}/events/${eventId}/postpone`);
+      const response = await this.patch<Event>(`/${eventId}/postpone`);
       return this.parseEventDates(response.data);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Postpone event (${eventId})`);
     }
   }
 
-  async submitEvent(eventId: string) {
+  async submitEvent(eventId: string): Promise<Event> {
     try {
-      const response = await axios.patch<Event>(
-        `${this.API_URL}/events/${eventId}/submit-for-approval`
-      );
+      const response = await this.patch<Event>(`/${eventId}/submit-for-approval`);
       return this.parseEventDates(response.data);
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, `Submit event (${eventId})`);

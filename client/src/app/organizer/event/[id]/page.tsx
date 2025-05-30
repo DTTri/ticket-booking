@@ -18,8 +18,6 @@ import {
   SectionPricingDTO,
   UpdateEventDTO,
 } from "@/models/DTO/EventDTO";
-import { useAuthSession } from "@/hooks/useUser";
-
 const categories = [
   { value: "MATCH", label: "Match" },
   { value: "CONCERT", label: "Concert" },
@@ -28,11 +26,10 @@ const categories = [
 
 const statusOptions = {
   Draft: ["Submit for approval"],
-  "Submit for approval": ["Published"], // Admin transitions this to "Published"
-  Published: ["Cancelled", "Postponed"],
-  Postponed: ["Cancelled"],
+  Published: ["Cancel", "Postpone"],
+  Postponed: ["Cancel"],
   Cancelled: [],
-  Rescheduled: ["Cancelled", "Postponed"],
+  Rescheduled: ["Cancel", "Postpone"],
 };
 
 export default function EventPage() {
@@ -41,7 +38,6 @@ export default function EventPage() {
   const eventId = params?.id as string;
   const isEditMode = eventId && eventId !== "new";
 
-  const { user } = useAuthSession();
   //TODO: replace with actual admin check
   const isAdmin = true;
   const {
@@ -152,7 +148,9 @@ export default function EventPage() {
       const reader = new FileReader();
       reader.onload = event => {
         if (event.target?.result) {
-          setPosterImage("");
+          setPosterImage(
+            "https://cdn-images.vtv.vn/zoom/640_400/2015/liga-bbva-2014-2015-thumb-690-1432537493846.jpg"
+          );
         }
       };
       reader.readAsDataURL(file);
@@ -165,7 +163,10 @@ export default function EventPage() {
       const reader = new FileReader();
       reader.onload = event => {
         if (event.target?.result) {
-          setGalleryImages([...galleryImages, ""]);
+          setGalleryImages([
+            ...galleryImages,
+            "https://shineboutique.vn/wp-content/uploads/2024/10/nhung-cau-thu-tre-trien-vong-nhat-la-liga.webp",
+          ]);
         }
       };
       reader.readAsDataURL(file);
@@ -180,26 +181,26 @@ export default function EventPage() {
 
   const isPricingDisabled = status !== "Draft";
 
-  const handleStatusAction = async (action: EventStatus) => {
-    if (action === EventStatus.REJECTED && isAdmin) {
+  const handleStatusAction = async (action: string) => {
+    if (action === "Reject" && isAdmin) {
       setShowRejectionDialog(true);
       return;
     }
     try {
       let updatedEvent;
       switch (action) {
-        case EventStatus.SUBMIT_FOR_APPROVAL:
+        case "Submit for approval":
           if (!eventId) {
             alert("Please save the draft event first.");
             return;
           }
           updatedEvent = await submitExistingEvent(eventId);
           break;
-        case EventStatus.CANCELED:
+        case "Cancel":
           if (!eventId) return;
           updatedEvent = await cancelExistingEvent(eventId);
           break;
-        case EventStatus.POSTPONED:
+        case "Postpone":
           if (!eventId) return;
           updatedEvent = await postponeExistingEvent(eventId);
           break;
@@ -242,9 +243,9 @@ export default function EventPage() {
     if (!eventId) return;
     try {
       await approveExistingEvent(eventId);
-      await loadEvent(eventId); // Reload to get updated status and data
+      await loadEvent(eventId);
       setStatus(EventStatus.PUBLISHED);
-      alert("Event approved successfully"); // Optimistic update or set from response
+      alert("Event approved successfully");
     } catch (err) {
       console.error("Failed to approve event:", err);
       alert("Error approving event");
@@ -309,7 +310,10 @@ export default function EventPage() {
         }
       }
     } else {
-      // Create new event
+      if (sectionPricing.length !== selectedVenue?.sections.length) {
+        alert("Please set prices for all sections before creating the event.");
+        return;
+      }
       const eventData: CreateEventDTO = {
         name: eventName,
         category,
@@ -319,7 +323,6 @@ export default function EventPage() {
         venueId: selectedVenue.venueId,
         venueName: selectedVenue.name,
         venueAddress: selectedVenue.address,
-        organizerUserId: user?.userId || "",
         poster: posterImage || "",
         images: galleryImages,
         details,
@@ -382,7 +385,7 @@ export default function EventPage() {
                     <CheckCircle className="mr-1" size={16} /> Approve
                   </Button>
                   <Button
-                    onClick={() => handleStatusAction(EventStatus.REJECTED)}
+                    onClick={() => handleStatusAction("Reject")}
                     className="bg-red-500 hover:bg-red-600 text-white flex items-center"
                   >
                     <XCircle className="mr-1" size={16} /> Reject
@@ -390,7 +393,6 @@ export default function EventPage() {
                 </div>
               )}
 
-              {/* Show regular status change buttons */}
               {status &&
                 statusOptions[status as keyof typeof statusOptions]?.map(option => (
                   <Button
@@ -759,7 +761,8 @@ export default function EventPage() {
                           setSectionPricing(newSectionPricing);
                         }}
                         className={`w-full h-8 px-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary ${isPricingDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
-                        disabled={isPricingDisabled}
+                        disabled={isEditMode || isPricingDisabled}
+                        required
                       />
                     </div>
                   </div>

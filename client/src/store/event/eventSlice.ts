@@ -31,7 +31,8 @@ export const fetchAllEvents = createAsyncThunk<Event[]>(
   "events/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      return await eventService.getAllEvents();
+      const events = await eventService.getAllEvents();
+      return events;
     } catch (error) {
       return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
     }
