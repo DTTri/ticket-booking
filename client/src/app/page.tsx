@@ -4,9 +4,9 @@ import home_background from "../../public/Home_Background.png";
 import pngguru from "../../public/pngguru.svg";
 import { Button } from "@/components/ui/button";
 import EventInfo from "@/components/home/EventInfo";
-import { sampleEvents } from "@/libs/place-holder.data";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useEventList } from "@/hooks/useEvents";
+import { EventStatus } from "@/models/Event";
 import LoadingSpinner from "@/components/ui/loading";
 
 export default function HomePage() {
@@ -17,6 +17,16 @@ export default function HomePage() {
   const itemsPerPage = 3;
 
   const { events, isLoadingList, loadEvents } = useEventList();
+
+  // Filter events to show only upcoming published events
+  const upcomingPublishedEvents = useMemo(() => {
+    const now = new Date();
+    return events
+      .filter(
+        event => event.status === EventStatus.PUBLISHED && new Date(event.startDateTime) > now
+      )
+      .sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime());
+  }, [events]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -29,12 +39,21 @@ export default function HomePage() {
     fetchEvents();
   }, [loadEvents]);
 
+  // Reset pagination when filtered events change
+  useEffect(() => {
+    setStartIndex(0);
+  }, [upcomingPublishedEvents.length]);
+
   if (isLoadingList) {
-    <LoadingSpinner />;
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   const handleNext = () => {
-    if (startIndex + itemsPerPage < sampleEvents.length) {
+    if (startIndex + itemsPerPage < upcomingPublishedEvents.length) {
       setStartIndex(startIndex + itemsPerPage);
     }
   };
@@ -106,42 +125,49 @@ export default function HomePage() {
         </div>
       </div>
       <div className="w-[75%] mx-auto searched-match py-5 px-6">
-        <div className="text-[#242565] font-bold text-3xl mb-3">Recently Viewed</div>
-        <div className="relative flex items-center">
-          <button
-            onClick={handlePrevious}
-            disabled={startIndex === 0}
-            className="absolute left-[-70px] top-1/2 transform -translate-y-1/2 bg-[#1D1D1D] text-white px-4 py-2 rounded-full disabled:opacity-50"
-          >
-            &lt;
-          </button>
-
-          <div className="w-full overflow-hidden">
-            <div
-              className="flex transition-transform duration-700 ease-in-out"
-              style={{
-                transform: `translateX(-${startIndex * (100 / itemsPerPage)}%)`,
-              }}
-            >
-              {events.map(event => (
-                <div
-                  key={event.eventId}
-                  className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4"
-                >
-                  <EventInfo event={event} />
-                </div>
-              ))}
-            </div>
+        <div className="text-[#242565] font-bold text-3xl mb-3">Upcoming Events</div>
+        {upcomingPublishedEvents.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500 text-lg">No upcoming events available at the moment.</p>
+            <p className="text-gray-400 text-sm mt-2">Check back later for new events!</p>
           </div>
+        ) : (
+          <div className="relative flex items-center">
+            <button
+              onClick={handlePrevious}
+              disabled={startIndex === 0}
+              className="absolute left-[-70px] top-1/2 transform -translate-y-1/2 bg-[#1D1D1D] text-white px-4 py-2 rounded-full disabled:opacity-50"
+            >
+              &lt;
+            </button>
 
-          <button
-            onClick={handleNext}
-            disabled={startIndex + itemsPerPage >= sampleEvents.length}
-            className="absolute right-[-70px] top-1/2 transform -translate-y-1/2 bg-[#1D1D1D] text-white px-4 py-2 rounded-full disabled:opacity-50"
-          >
-            &gt;
-          </button>
-        </div>
+            <div className="w-full overflow-hidden">
+              <div
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{
+                  transform: `translateX(-${startIndex * (100 / itemsPerPage)}%)`,
+                }}
+              >
+                {upcomingPublishedEvents.map(event => (
+                  <div
+                    key={event.eventId}
+                    className="w-[calc(100%/3)] h-full flex-shrink-0 py-2 px-4"
+                  >
+                    <EventInfo event={event} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={handleNext}
+              disabled={startIndex + itemsPerPage >= upcomingPublishedEvents.length}
+              className="absolute right-[-70px] top-1/2 transform -translate-y-1/2 bg-[#1D1D1D] text-white px-4 py-2 rounded-full disabled:opacity-50"
+            >
+              &gt;
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
