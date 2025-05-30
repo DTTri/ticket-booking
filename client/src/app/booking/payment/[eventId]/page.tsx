@@ -16,6 +16,7 @@ import { useBookingDetails } from "@/hooks/useBooking";
 import { useAuthSession } from "@/hooks/useUser";
 import { PaymentDTO } from "@/models/DTO/PaymentDTO";
 import LoadingSpinner from "@/components/ui/loading";
+import { useEventDetails } from "@/hooks/useEvents";
 
 const fetchBookingEvent = async (eventId: string) => {
   // const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
@@ -64,7 +65,7 @@ export default function PaymentPage() {
     clearError: clearPaymentError,
   } = useProcessPayment();
 
-  const [curEvent, setCurEvent] = useState<Event>();
+  const { event: curEvent, loadEvent } = useEventDetails();
   const [paymentState, setPaymentState] = useState<paymetState>("delivery");
   const [isOpenInfoTimePopup, setIsOpenInfoTimePopup] = useState(false);
 
@@ -81,20 +82,17 @@ export default function PaymentPage() {
 
   //States for selected seats
   const [selectedSeats, setSelectedSeats] = useState<QRCodeType[]>();
-
   useEffect(() => {
-    const loadEventDataDetail = async () => {
-      try {
-        const event = await fetchBookingEvent(eventId as string);
-        setCurEvent(event);
-        setIsOpenInfoTimePopup(true);
-        setSelectedSeats(sampleQRCodeData);
-      } catch (error) {
-        console.error("Error fetching event detail:", error);
-      }
-    };
-    loadEventDataDetail();
-  }, [eventId]);
+    if (eventId) {
+      loadEvent(eventId as string);
+    }
+  }, [eventId, loadEvent]);
+  useEffect(() => {
+    if (curEvent) {
+      setIsOpenInfoTimePopup(true);
+      setSelectedSeats(sampleQRCodeData);
+    }
+  }, [curEvent]);
 
   // Handle successful payment
   useEffect(() => {
@@ -431,7 +429,7 @@ export default function PaymentPage() {
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Location</p>
-            <p className="text-base font-semibold">{curEvent?.venueId}</p>
+            <p className="text-base font-semibold">{curEvent?.venueAddress.slice(0, 20)}</p>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <p className="text-sm text-gray-500">Time</p>
@@ -439,16 +437,16 @@ export default function PaymentPage() {
           </div>
         </div>
 
-        <div className="border-t border-gray-300 py-3 flex flex-col gap-2">
+        {/* <div className="border-t border-gray-300 py-3 flex flex-col gap-2">
           <div className="flex justify-between">
             <p className="text-sm text-gray-500">Tickets</p>
-            <p className="text-sm font-semibold">$5 x 4</p>
+            <p className="text-sm font-semibold">${sampleQRCodeData.length} x $10</p>
           </div>
           <div className="flex justify-between border-t border-gray-300 py-3">
             <p className="text-base font-bold">Total</p>
-            <p className="text-base font-bold">${300}</p>
+            <p className="text-base font-bold">${currentBooking?.totalPrice}</p>
           </div>
-        </div>
+        </div> */}
       </div>
       {isOpenInfoTimePopup && (
         <TimeInfoConfirmPopup minutes={10} onStart={() => setIsOpenInfoTimePopup(false)} />
