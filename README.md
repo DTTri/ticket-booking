@@ -1,46 +1,86 @@
-# Ticket Selling Platform
+# 🎫 Ticket Selling Platform
 
-A web application for buying and selling tickets to events.
+A web application for browsing, purchasing, and managing event tickets.
 
-## Project Structure
+---
 
-This repository contains the following components:
+## 🚀 Features
 
-- `client/`: Frontend application built with Next.js
+* Event browsing and detailed view
+* Seat selection and ticket reservation
+* Ticket management for organizers
+* Make payment and refund process
 
-## Getting Started
+---
 
-### Prerequisites
+## 📦 Tech Stack
 
-- Node.js (v18 or higher)
-- npm or yarn
+* **Frontend:** Next.js, ReactJS, Redux, Tailwind CSS
+* **Backend:** NestJS, PostgreSQL
 
-### Installation
+> ⚠️ Note: This repository includes only the frontend (client) code.
 
-1. Clone the repository:
+---
 
-   ```bash
-   git clone <repository-url>
-   cd project
-   ```
+## 🧰 Prerequisites
 
-2. Install dependencies for the client:
-   ```bash
-   cd client
-   npm install
-   # or
-   yarn install
-   ```
+Before you begin, ensure you have the following installed:
 
-### Running the Application
+* **Node.js** v18 or higher: [Download Node.js](https://nodejs.org/)
+* **npm** or **yarn** package manager
 
-#### Client (Frontend)
+---
+
+## 🛠️ Installation & Setup
+
+1. **Clone the repository:**
+
+```bash
+git clone <repository-url>
+cd project
+```
+
+2. **Install frontend dependencies:**
 
 ```bash
 cd client
-npm run dev
-# or
-yarn dev
+npm install      # or yarn install
 ```
 
-The client application will be available at [http://localhost:3000](http://localhost:3000).
+---
+
+## 🧪 Running the Application
+
+### 👉 Start the frontend (Next.js app):
+
+```bash
+cd client
+npm run dev      # or yarn dev
+```
+
+The application will be available at:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 📂 Folder Structure (client/)
+
+```
+client/
+├── components/        # Reusable React components
+├── pages/             # Next.js pages (routes)
+├── public/            # Static assets
+├── redux/             # Redux store and slices
+├── styles/            # Global styles
+├── utils/             # Helper functions
+└── ...
+```
+
+---
+
+## 📃 License
+
+This project is licensed under the MIT License.
