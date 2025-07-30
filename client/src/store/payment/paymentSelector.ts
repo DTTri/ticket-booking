@@ -3,7 +3,8 @@ import { RootState } from "../store";
 // Payment selectors
 export const selectAllPayments = (state: RootState) => state.payment.payments;
 export const selectCurrentPayment = (state: RootState) => state.payment.currentPayment;
-export const selectCurrentPaymentResponse = (state: RootState) => state.payment.currentPaymentResponse;
+export const selectCurrentPaymentResponse = (state: RootState) =>
+  state.payment.currentPaymentResponse;
 
 // Refund selectors
 export const selectAllRefunds = (state: RootState) => state.payment.refunds;

@@ -26,7 +26,7 @@ class UserService extends BaseService {
     } catch (error) {
       ErrorHandler.handleServiceErrorFromCatch(error, "Get user by ID");
     }
-  }  
+  }
 }
 
 const userService = new UserService();

@@ -74,17 +74,14 @@ export const requestPasswordReset = createAsyncThunk(
   }
 );
 
-export const getAllUsers = createAsyncThunk(
-  "user/getAllUsers",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await userService.getAllUsers();
-      return response;
-    } catch (error) {
-      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
-    }
+export const getAllUsers = createAsyncThunk("user/getAllUsers", async (_, { rejectWithValue }) => {
+  try {
+    const response = await userService.getAllUsers();
+    return response;
+  } catch (error) {
+    return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
   }
-);
+});
 
 export const getUserById = createAsyncThunk(
   "user/getAllUsers",

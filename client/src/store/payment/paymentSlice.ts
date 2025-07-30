@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { paymentService } from "@/services/paymentService";
-import { 
-  PaymentDTO, 
-  PaymentResponse, 
-  PaymentDetails, 
-  RefundDTO, 
-  RefundResponse 
+import {
+  PaymentDTO,
+  PaymentResponse,
+  PaymentDetails,
+  RefundDTO,
+  RefundResponse,
 } from "@/models/DTO/PaymentDTO";
 import { ErrorHandler } from "@/utils/errorHandler";
 
@@ -114,27 +114,27 @@ const paymentSlice = createSlice({
   name: "payment",
   initialState,
   reducers: {
-    clearCurrentPayment: (state) => {
+    clearCurrentPayment: state => {
       state.currentPayment = null;
       state.currentPaymentResponse = null;
     },
-    clearCurrentRefund: (state) => {
+    clearCurrentRefund: state => {
       state.currentRefund = null;
     },
-    clearMutationError: (state) => {
+    clearMutationError: state => {
       state.errorMutation = null;
     },
-    clearListError: (state) => {
+    clearListError: state => {
       state.errorList = null;
     },
-    clearDetailsError: (state) => {
+    clearDetailsError: state => {
       state.errorDetails = null;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // Process payment
-      .addCase(processPayment.pending, (state) => {
+      .addCase(processPayment.pending, state => {
         state.isLoadingMutation = true;
         state.errorMutation = null;
       })
@@ -148,7 +148,7 @@ const paymentSlice = createSlice({
       })
 
       // Fetch payment by ID
-      .addCase(fetchPaymentById.pending, (state) => {
+      .addCase(fetchPaymentById.pending, state => {
         state.isLoadingDetails = true;
         state.errorDetails = null;
       })
@@ -162,7 +162,7 @@ const paymentSlice = createSlice({
       })
 
       // Fetch my payments
-      .addCase(fetchMyPayments.pending, (state) => {
+      .addCase(fetchMyPayments.pending, state => {
         state.isLoadingList = true;
         state.errorList = null;
       })
@@ -176,21 +176,24 @@ const paymentSlice = createSlice({
       })
 
       // Fetch payment by booking ID
-      .addCase(fetchPaymentByBookingId.pending, (state) => {
+      .addCase(fetchPaymentByBookingId.pending, state => {
         state.isLoadingDetails = true;
         state.errorDetails = null;
       })
-      .addCase(fetchPaymentByBookingId.fulfilled, (state, action: PayloadAction<PaymentDetails>) => {
-        state.isLoadingDetails = false;
-        state.currentPayment = action.payload;
-      })
+      .addCase(
+        fetchPaymentByBookingId.fulfilled,
+        (state, action: PayloadAction<PaymentDetails>) => {
+          state.isLoadingDetails = false;
+          state.currentPayment = action.payload;
+        }
+      )
       .addCase(fetchPaymentByBookingId.rejected, (state, action) => {
         state.isLoadingDetails = false;
         state.errorDetails = action.payload as string;
       })
 
       // Request refund
-      .addCase(requestRefund.pending, (state) => {
+      .addCase(requestRefund.pending, state => {
         state.isLoadingMutation = true;
         state.errorMutation = null;
       })
@@ -205,7 +208,7 @@ const paymentSlice = createSlice({
       })
 
       // Fetch event payments
-      .addCase(fetchEventPayments.pending, (state) => {
+      .addCase(fetchEventPayments.pending, state => {
         state.isLoadingList = true;
         state.errorList = null;
       })

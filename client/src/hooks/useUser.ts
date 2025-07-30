@@ -37,7 +37,6 @@ export const useUsers = () => {
   return { users, isLoading, error };
 };
 
-
 export const useLogin = () => {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(selectAuthLoading);
