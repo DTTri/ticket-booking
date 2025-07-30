@@ -11,6 +11,7 @@ import {
 } from "@/store/user/userSlice";
 import {
   selectAuthUser,
+  selectAllUsers,
   selectIsAuthenticated,
   selectAuthLoading,
   selectAuthError,
@@ -27,6 +28,15 @@ export const useAuthSession = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   return { user, isAuthenticated };
 };
+
+export const useUsers = () => {
+  const users = useAppSelector(selectAllUsers);
+  const isLoading = useAppSelector(selectAuthLoading);
+  const error = useAppSelector(selectAuthError);
+
+  return { users, isLoading, error };
+};
+
 
 export const useLogin = () => {
   const dispatch = useAppDispatch();

@@ -1,5 +1,5 @@
 import { ErrorHandler } from "@/utils/errorHandler";
-import BaseService from "./baseService";
+import BaseService from "./BaseService";
 import { BookDTO, Booking, BookingSeat } from "./types/bookingTypes";
 
 class BookingService extends BaseService {

@@ -2,7 +2,6 @@
 import TimeCount from "@/components/booking/TimeCount";
 import TimeInfoConfirmPopup from "@/components/booking/TimeInfoConfirmPopup";
 import { sampleEvents } from "@/libs/place-holder.data";
-import Event from "@/models/Event";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { TextField } from "@/components/ui/textinput";
@@ -18,15 +17,15 @@ import { PaymentDTO } from "@/models/DTO/PaymentDTO";
 import LoadingSpinner from "@/components/ui/loading";
 import { useEventDetails } from "@/hooks/useEvents";
 
-const fetchBookingEvent = async (eventId: string) => {
-  // const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
-  // if (!response.ok) {
-  //   throw new Error("Failed to fetch event detail");
-  // }
-  // return response.json();
-  console.warn("event id" + eventId);
-  return sampleEvents[0]; // Mocked data for now
-};
+// const fetchBookingEvent = async (eventId: string) => {
+//   // const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
+//   // if (!response.ok) {
+//   //   throw new Error("Failed to fetch event detail");
+//   // }
+//   // return response.json();
+//   console.warn("event id" + eventId);
+//   return sampleEvents[0]; // Mocked data for now
+// };
 
 type paymetState = "delivery" | "payment" | "confirm";
 

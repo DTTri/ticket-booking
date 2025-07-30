@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { UserRole } from "@/constants";
 import { LoginDTO, SignupDTO, LoginResponse } from "@/services/types/authTypes";
+import userService from "@/services/userService";
 
 interface JWTPayload {
   sub: string; // User ID
@@ -19,6 +20,7 @@ interface JWTPayload {
 
 interface UserState {
   user: User | null;
+  users: User[];
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -28,6 +30,7 @@ interface UserState {
 
 const initialState: UserState = {
   user: null,
+  users: [],
   isLoading: false,
   error: null,
   isAuthenticated: false,
@@ -71,6 +74,30 @@ export const requestPasswordReset = createAsyncThunk(
   }
 );
 
+export const getAllUsers = createAsyncThunk(
+  "user/getAllUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await userService.getAllUsers();
+      return response;
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
+    }
+  }
+);
+
+export const getUserById = createAsyncThunk(
+  "user/getAllUsers",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await userService.getUserById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(ErrorHandler.handleAsyncThunkErrorFromCatch(error));
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -81,11 +108,17 @@ const userSlice = createSlice({
       state.error = null;
       // Clear token from cookies
       Cookies.remove("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     },
     // Reset forgot password state
     resetForgotPasswordState: state => {
       state.forgotPasswordStatus = "idle";
       state.forgotPasswordError = null;
+    },
+    setSession: (state, action: PayloadAction<{ user: User; token: string }>) => {
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
     },
   },
   extraReducers: builder => {
@@ -132,6 +165,10 @@ const userSlice = createSlice({
           };
           console.log(user);
 
+          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("token", token);
+          localStorage.setItem("expiration", expiration);
+
           state.user = user;
           state.isAuthenticated = true;
           state.error = null;
@@ -146,6 +183,19 @@ const userSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.error = (action.payload as string) || "Login failed";
+      })
+      .addCase(getAllUsers.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllUsers.fulfilled, (state, action: PayloadAction<User[]>) => {
+        state.isLoading = false;
+        state.error = null;
+        state.users = action.payload;
+      })
+      .addCase(getAllUsers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = (action.payload as string) || "Failed to fetch users";
       })
       .addCase(signupUser.pending, state => {
         state.isLoading = true;
@@ -176,6 +226,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, resetForgotPasswordState } = userSlice.actions;
+export const { logout, resetForgotPasswordState, setSession } = userSlice.actions;
 
 export default userSlice.reducer;

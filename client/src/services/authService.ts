@@ -1,6 +1,6 @@
 import { ErrorHandler } from "@/utils/errorHandler";
 import { User } from "@/models/User";
-import BaseService from "./baseService";
+import BaseService from "./BaseService";
 import { LoginDTO, LoginResponse, SignupDTO } from "./types/authTypes";
 
 class AuthService extends BaseService {

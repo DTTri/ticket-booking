@@ -113,16 +113,16 @@ export const usePaymentList = () => {
   const isLoading = useAppSelector(selectIsLoadingPaymentsList);
   const error = useAppSelector(selectPaymentsListError);
 
-  const fetchMyPayments = useCallback(async () => {
-    return dispatch(fetchMyPayments()).unwrap();
-  }, [dispatch]);
+  // const fetchMyPayments = useCallback(async () => {
+  //   return dispatch(fetchMyPayments()).unwrap();
+  // }, [dispatch]);
 
-  const fetchEventPayments = useCallback(
-    async (eventId: string) => {
-      return dispatch(fetchEventPayments(eventId)).unwrap();
-    },
-    [dispatch]
-  );
+  // const fetchEventPayments = useCallback(
+  //   async (eventId: string) => {
+  //     return dispatch(fetchEventPayments(eventId)).unwrap();
+  //   },
+  //   [dispatch]
+  // );
 
   const clearError = useCallback(() => {
     dispatch(clearListError());

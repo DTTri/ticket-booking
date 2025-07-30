@@ -78,7 +78,7 @@ class BaseService {
       async error => {
         const originalRequest = error.config;
 
-        // Handle 401 Unauthorized
+        // Handle 401 Unauthorized: expired token
         if (error.response?.status === 401 && !originalRequest._retry) {
           if (this.isRefreshing) {
             return new Promise((resolve, reject) => {
